@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-YWLKFKJQ7L"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-YWLKFKJQ7L');
+    </script>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="alternate icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=5.0, user-scalable=yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="theme-color" content="#000000" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&family=Inter:wght@100..900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <title>Veridian - Noticias sin Sesgos | Datos Objetivos</title>
+    <meta name="description" content="Únete a la revolución de las noticias objetivas. Primera plataforma que elimina sesgos y opiniones, enfocada en datos verificados para profesionales." />
+    <meta name="author" content="Veridian" />
+    <meta name="keywords" content="noticias objetivas, periodismo sin sesgos, datos verificados, noticias para profesionales, ciencias sociales" />
+
+    <meta property="og:title" content="Veridian - Noticias sin Sesgos" />
+    <meta property="og:description" content="Únete a la revolución de las noticias objetivas. Datos verificados sin sesgos editoriales." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://veridian.news" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Veridian - Noticias sin Sesgos" />
+    <meta name="twitter:description" content="Únete a la revolución de las noticias objetivas. Datos verificados sin sesgos editoriales." />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script>
+      // Force unregister all service workers to prevent stale cache issues
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(function(registrations) {
+          for(let registration of registrations) {
+            registration.unregister();
+            console.log('Service Worker unregistered');
+          }
+        }).catch(function(err) {
+          console.log('Service Worker unregistration failed: ', err);
+        });
+      }
+    </script>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
