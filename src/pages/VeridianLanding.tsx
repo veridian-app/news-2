@@ -18,14 +18,17 @@ const VeridianLanding = () => {
   const [isSent, setIsSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isRedirecting, setIsRedirecting] = useState(false);
 
   useEffect(() => {
+    // Si ya estamos autenticados, no mostramos nada y vamos directo a noticias
     if (isAuthenticated && !isAuthLoading) {
       navigate('/veridian-news');
     }
   }, [isAuthenticated, isAuthLoading, navigate]);
 
-  if (isAuthLoading) {
+  // Si el sistema de Auth está cargando la sesión inicial, mostramos la pantalla táctica de carga
+  if (isAuthLoading || isRedirecting) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center relative overflow-hidden">
         <div className="noise-overlay" />
@@ -38,7 +41,9 @@ const VeridianLanding = () => {
         >
           <div className="w-16 h-16 border-t-2 border-emerald-500 rounded-full animate-spin shadow-[0_0_20px_rgba(16,185,129,0.3)]" />
           <div className="flex flex-col items-center gap-2">
-            <span className="text-[10px] font-mono text-emerald-500/60 uppercase tracking-[0.5em] animate-pulse">Sincronizando_Terminal</span>
+            <span className="text-[10px] font-mono text-emerald-500/60 uppercase tracking-[0.5em] animate-pulse">
+              {isRedirecting ? 'AUTORIZANDO_ACCESO...' : 'SINCRONIZANDO_TERMINAL...'}
+            </span>
             <div className="w-48 h-0.5 bg-white/5 rounded-full overflow-hidden">
               <motion.div 
                 className="h-full bg-emerald-500"
@@ -54,20 +59,29 @@ const VeridianLanding = () => {
   }
 
   const handleGoogleLogin = async () => {
+    if (isLoading || isRedirecting) return;
+    
     setIsLoading(true);
+    setIsRedirecting(true); // Bloqueo total inmediato
     setError(null);
+    
     try {
-      await signInWithGoogle();
-      // El redireccionamiento lo maneja Supabase OAuth
+      const { error } = await signInWithGoogle();
+      if (error) throw error;
+      // El navegador se redireccionará solo a Google
     } catch (err: any) {
+      console.error("Google login error:", err);
       setError(err.message);
       setIsLoading(false);
-      toast.error("ERROR_GOOGLE", { description: "Fallo en el enlace con el proveedor." });
+      setIsRedirecting(false);
+      toast.error("ERROR_GOOGLE", { description: "Fallo en el protocolo de enlace." });
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isLoading || isRedirecting) return;
+
     setIsLoading(true);
     setError(null);
 
@@ -79,8 +93,8 @@ const VeridianLanding = () => {
           toast.error("ERROR_AUTENTICACION", { description: "Verifica protocolo y clave." });
           setIsLoading(false);
         } else {
+          setIsRedirecting(true); // Bloqueo total tras éxito
           toast.success("ACCESO_CONCEDIDO", { description: "Sincronizando terminal..." });
-          // El redireccionamiento lo manejará el useEffect de isAuthenticated
         }
       } else {
         const { error: magicError } = await signInWithMagicLink(email.trim());

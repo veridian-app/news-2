@@ -9,7 +9,7 @@ import { useIsMobile, useScreenSize } from "../hooks/use-mobile";
 import { Clock, Brain, ThumbsUp, ThumbsDown, X, ExternalLink, Search, Globe, Star, MessageSquare, User, Shield, LogOut, Zap } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { BottomDock } from "../components/BottomDock";
-import { NewsCard } from "@/components/NewsCard";
+import { NewsCard } from "../components/NewsCard";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { useSearch } from "@/contexts/SearchContext";
@@ -18,33 +18,8 @@ import { NewsItem } from "@/types/news";
 import { normalizeCategory, detectCategory, shuffleNews, recommendNews } from "@/utils/news-utils";
 
 
-// Sanitize API_BASE: force relative path in production to avoid CORS/loopback issues
-const getApiBase = () => {
-  if (typeof window !== 'undefined') {
-    const host = window.location.hostname;
-    if (host !== 'localhost' && host !== '127.0.0.1') {
-      return ''; // Force relative in production regardless of env vars
-    }
-  }
-  return import.meta.env.VITE_VERIDIAN_API_BASE || '';
-};
-const API_BASE = getApiBase();
 
-// Legacy fingerprint function - kept for backwards compatibility but now we use Supabase Auth
-const getOrCreateUserId = (): string => {
-  // This is now just a fallback - the real user ID comes from useAuth
-  let userId = localStorage.getItem('veridian_userId');
-  if (!userId) {
-    userId = `anon-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-    localStorage.setItem('veridian_userId', userId);
-  }
-  return userId;
-};
-
-// Fallback for non-authenticated context (shouldn't happen with ProtectedRoute)
-const FALLBACK_USER_ID = getOrCreateUserId();
-
-const VeridianNews = () => {
+export default function VeridianNews() {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
   const screenSize = useScreenSize();
@@ -52,9 +27,28 @@ const VeridianNews = () => {
   const { user, signOut } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
 
-  // Use authenticated user ID, fallback to anonymous ID for backwards compatibility
-  const USER_ID = user?.id || FALLBACK_USER_ID;
+  // Mover constantes calculadas al interior del componente o useMemo
+  const API_BASE = useMemo(() => {
+    if (typeof window !== 'undefined') {
+      const host = window.location.hostname;
+      if (host !== 'localhost' && host !== '127.0.0.1') {
+        return ''; 
+      }
+    }
+    return import.meta.env.VITE_VERIDIAN_API_BASE || '';
+  }, []);
 
+  const USER_ID = useMemo(() => {
+    if (user?.id) return user.id;
+    
+    // Fallback para contexto no autenticado
+    let userId = localStorage.getItem('veridian_userId');
+    if (!userId) {
+      userId = `anon-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      localStorage.setItem('veridian_userId', userId);
+    }
+    return userId;
+  }, [user]);
 
   const [isLoading, setIsLoading] = useState(true);
   const [loadingProgress, setLoadingProgress] = useState(0);
@@ -1693,5 +1687,5 @@ const VeridianNews = () => {
   );
 };
 
-export default VeridianNews;
+
 // VERIDIAN_SYSTEM_SYNC_ACTIVE_2024_05_04_1340
