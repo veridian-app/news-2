@@ -8,6 +8,12 @@ import { supabase, isSupabaseConfigured } from "../integrations/supabase/client"
 import { useIsMobile, useScreenSize } from "../hooks/use-mobile";
 import { Clock, Brain, ThumbsUp, ThumbsDown, X, ExternalLink, Search, Globe, Star, MessageSquare, User, Shield, LogOut, Zap } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { BottomDock } from "../components/BottomDock";
+import { NewsCard } from "../components/NewsCard";
+import { toast } from "sonner";
+import { useAuth } from "@/contexts/AuthContext";
+import { useSearch } from "@/contexts/SearchContext";
+import { NewsItem } from "@/types/news";
 import { IntelligencePanel } from "../components/IntelligencePanel";
 import { OnboardingOverlay } from "../components/OnboardingOverlay";
 import { normalizeCategory, detectCategory, shuffleNews, recommendNews, extractKeyPoints } from "@/utils/news-utils";
@@ -422,14 +428,15 @@ export default function VeridianNews() {
 
             <BottomDock />
             
-                </motion.div>
-              )}
-            </AnimatePresence>
+            <OnboardingOverlay 
+              show={showOnboarding}
+              onComplete={handleCompleteOnboarding}
+            />
           </motion.div>
       </AnimatePresence>
     </div>
   );
-};
+}
 
 
 // VERIDIAN_SYSTEM_SYNC_ACTIVE_2024_05_04_1340

@@ -125,3 +125,46 @@ export const recommendNews = (newsArray: any[], preferences: Map<string, number>
 
   return [...veryRecommended, ...varietyFromRest, ...shuffledRecommended, ...remainingRest];
 };
+
+/**
+ * Extrae puntos clave de un texto de forma táctica para el feed de Veridian.
+ * Intenta obtener las oraciones más significativas y las formatea como bullets.
+ */
+export const extractKeyPoints = (text: string): string[] => {
+  if (!text || text.trim().length === 0) {
+    return ['Información no disponible', 'Contenido pendiente', 'Datos en actualización'];
+  }
+
+  // Dividir el texto en oraciones
+  const sentences = text
+    .split(/[.!?]\s+/)
+    .map(s => s.trim())
+    .filter(s => s.length > 20 && s.length < 250); 
+
+  if (sentences.length === 0) {
+    const parts = text.split(/[,;]\s+/).filter(p => p.length > 15);
+    return parts.slice(0, 3).map(p => p.trim());
+  }
+
+  // Seleccionar las oraciones más informativas
+  const sortedSentences = sentences
+    .sort((a, b) => b.length - a.length)
+    .slice(0, 5)
+    .map(s => {
+      let cleaned = s.replace(/^\d+[\.\)]\s*/, ''); 
+      cleaned = cleaned.replace(/^[-•]\s*/, ''); 
+      cleaned = cleaned.trim();
+      if (!cleaned.match(/[.!?]$/)) {
+        cleaned += '.';
+      }
+      return cleaned;
+    });
+
+  // Asegurar que siempre haya al menos 3 puntos
+  const result = sortedSentences.slice(0, 3);
+  while (result.length < 3) {
+    result.push('Información adicional disponible en la fuente.');
+  }
+
+  return result;
+};
