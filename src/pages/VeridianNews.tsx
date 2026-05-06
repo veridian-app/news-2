@@ -96,9 +96,8 @@ export default function VeridianNews() {
   // Calcular noticias recomendadas basándose en preferencias y búsqueda
   const news = useMemo(() => {
     console.log('📰 Calculando noticias, rawNews.length:', rawNews.length);
-    // Solo usar noticias del Excel, no usar mockNews
     if (rawNews.length === 0) {
-      console.log('⚠️ No hay noticias del Excel disponibles');
+      console.log('⚠️ Esperando datos de la base de datos (Supabase)...');
       return [];
     }
 
