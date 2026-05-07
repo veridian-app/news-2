@@ -243,13 +243,18 @@ export default function VeridianNews() {
 
     try {
       if (isSupabaseConfigured()) {
-        const { data } = await (supabase as any)
+        const { data, error } = await (supabase as any)
           .from('daily_news')
           .select('*')
           .order('created_at', { ascending: false })
           .limit(200);
 
+        if (error) {
+          console.error("❌ Error fetching from Supabase:", error);
+        }
+
         if (data && data.length > 0) {
+          console.log(`✅ Loaded ${data.length} news items from Supabase.`);
           const processed = data.map((item: any) => ({
             id: item.id,
             title: item.title,
@@ -265,10 +270,16 @@ export default function VeridianNews() {
           setRawNews(processed);
           localStorage.setItem('veridian_news_cache', JSON.stringify(processed));
           return;
+        } else {
+          console.warn("⚠️ Supabase returned empty data or null.");
         }
+      } else {
+        console.warn("⚠️ Supabase is not configured.");
       }
-    } catch (error) { console.error(error); }
-    setRawNews(mockNews);
+    } catch (error) { 
+      console.error("❌ Unexpected error in loadNews:", error); 
+    }
+    setRawNews([]);
   };
 
   const loadUserLikes = async () => {
