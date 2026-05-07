@@ -231,6 +231,50 @@ export default function VeridianNews() {
     };
   }, [displayNews]);
 
+  // Background Prefetching of AI Analysis
+  useEffect(() => {
+    if (!currentVisibleNews || displayNews.length === 0) return;
+    
+    const prefetchActiveAndNext = async () => {
+      const currentIndex = displayNews.findIndex(n => n.id === currentVisibleNews.id);
+      if (currentIndex === -1) return;
+
+      // Prefetch current and next 2 news items
+      const itemsToPrefetch = displayNews.slice(currentIndex, currentIndex + 3);
+      
+      try {
+        const { analyzeNews } = await import("@/services/gemini");
+        
+        for (const item of itemsToPrefetch) {
+          // Si ya está en caché, saltar
+          if (analysisCache[item.id]) continue;
+
+          const cleanSummary = (item.summary || '').replace(/\.\.\.$/, '').trim();
+          const cleanAnalysis = (item.analysis || '').replace(/\.\.\.$/, '').trim();
+          const textToAnalyze = (item.content && item.content !== 'Contenido restringido.') 
+            ? item.content 
+            : `CONTEXTO_TÁCTICO: ${cleanAnalysis} | RESUMEN_ADICIONAL: ${cleanSummary}`;
+            
+          const analysis = await analyzeNews(item.title, textToAnalyze);
+          setAnalysisCache(prev => ({ ...prev, [item.id]: analysis }));
+          
+          // Pausa entre peticiones para no saturar la API
+          await new Promise(resolve => setTimeout(resolve, 1500));
+        }
+      } catch (err) {
+        console.warn("Prefetch warning:", err);
+      }
+    };
+    
+    if (prefetchTimeoutRef.current) clearTimeout(prefetchTimeoutRef.current);
+    // Esperar 1 segundo antes de empezar a analizar (por si el usuario hace scroll rápido)
+    prefetchTimeoutRef.current = setTimeout(prefetchActiveAndNext, 1000);
+
+    return () => {
+      if (prefetchTimeoutRef.current) clearTimeout(prefetchTimeoutRef.current);
+    };
+  }, [currentVisibleNews, displayNews]);
+
   const openFullContent = async (item: NewsItem) => {
     setSelectedNews(item);
     setShowContentModal(true);

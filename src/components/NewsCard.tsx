@@ -52,7 +52,7 @@ export const NewsCard = ({ item, isActive, index, onLike, onShare, onReadMore, c
         }
 
         const now = Date.now();
-        const DOUBLE_TAP_DELAY = 300;
+        const DOUBLE_TAP_DELAY = 200;
 
         if (now - lastTap.current < DOUBLE_TAP_DELAY) {
             // Double tap detected
