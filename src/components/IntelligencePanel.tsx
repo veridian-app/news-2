@@ -85,20 +85,29 @@ export const IntelligencePanel = ({
                     </motion.div>
                   )}
 
-                  <div className="text-lg md:text-xl text-zinc-300 font-sans font-light leading-relaxed space-y-6">
-                    {selectedNews.content && selectedNews.content !== 'Contenido restringido.' && 
-                      selectedNews.content
-                        .replace(/^\*\*.*?\*\*/, '')
-                        .split('\n')
-                        .map((p, i) => {
-                          const trimmed = p.trim();
-                          if (!trimmed) return null;
-                          if (trimmed.includes('### Fuentes') || trimmed.toLowerCase() === 'fuentes consultadas' || trimmed === 'Fuentes:') {
-                            return <h4 key={i} className="text-sm font-mono text-emerald-500/80 mt-12 mb-4 uppercase tracking-wider border-b border-white/5 pb-2">Fuentes Consultadas</h4>;
-                          }
-                          return <p key={i}>{trimmed}</p>;
-                        })
-                    }
+                  <div className="space-y-8 mt-12">
+                    <div className="flex items-center gap-3 border-b border-white/10 pb-4">
+                      <div className="w-2 h-2 rounded-full bg-emerald-500/50"></div>
+                      <h3 className="text-[12px] font-black uppercase tracking-[0.3em] text-white/50">Contexto_Original</h3>
+                    </div>
+                    
+                    <div className="text-lg md:text-xl text-zinc-300 font-sans font-light leading-relaxed space-y-6">
+                      {selectedNews.content && selectedNews.content !== 'Contenido restringido.' ? (
+                        selectedNews.content
+                          .replace(/^\*\*.*?\*\*/, '')
+                          .split('\n')
+                          .map((p, i) => {
+                            const trimmed = p.trim();
+                            if (!trimmed) return null;
+                            if (trimmed.includes('### Fuentes') || trimmed.toLowerCase() === 'fuentes consultadas' || trimmed === 'Fuentes:') {
+                              return <h4 key={i} className="text-sm font-mono text-emerald-500/80 mt-12 mb-4 uppercase tracking-wider border-b border-white/5 pb-2">Fuentes Consultadas</h4>;
+                            }
+                            return <p key={i} className="text-zinc-300/90">{trimmed}</p>;
+                          })
+                      ) : (
+                        <p className="text-zinc-500 italic font-mono text-sm">No se ha podido recuperar el cuerpo completo de esta noticia. Solo se dispone del informe de inteligencia.</p>
+                      )}
+                    </div>
                   </div>
                 </div>
 

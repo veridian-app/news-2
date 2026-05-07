@@ -293,12 +293,12 @@ export default function VeridianNews() {
             id: item.id,
             title: item.title,
             summary: item.summary,
-            content: item.content,
+            content: item.content || item.context || item.body || item.full_text || item.article || item.summary,
             image: item.image || item.image_url,
             date: item.published_at || item.created_at,
             source: item.source || 'VERIDIAN_INTEL',
             url: item.url,
-            category: item.category || detectCategory(item.title, item.content),
+            category: item.category || detectCategory(item.title, item.content || item.summary),
             analysis: item.analysis
           }));
           setRawNews(processed);
