@@ -197,6 +197,40 @@ export default function VeridianNews() {
     return () => clearInterval(interval);
   }, []);
 
+  useEffect(() => {
+    if (displayNews.length === 0) return;
+    
+    // Set initial active news if none is set
+    if (!currentVisibleNews) {
+      setCurrentVisibleNews(displayNews[0]);
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const index = Number(entry.target.getAttribute('data-index'));
+            if (!isNaN(index) && displayNews[index]) {
+              setCurrentVisibleNews(displayNews[index]);
+            }
+          }
+        });
+      },
+      {
+        root: feedContainerRef.current,
+        threshold: 0.6,
+      }
+    );
+
+    const cards = document.querySelectorAll('.news-card');
+    cards.forEach((card) => observer.observe(card));
+
+    return () => {
+      cards.forEach((card) => observer.unobserve(card));
+      observer.disconnect();
+    };
+  }, [displayNews]);
+
   const openFullContent = async (item: NewsItem) => {
     setSelectedNews(item);
     setShowContentModal(true);
