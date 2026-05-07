@@ -217,7 +217,7 @@ export default function VeridianNews() {
         ? item.content 
         : `CONTEXTO_TÁCTICO: ${cleanAnalysis} | RESUMEN_ADICIONAL: ${cleanSummary}`;
         
-      const { analyzeNews } = await import("@/utils/news-utils");
+      const { analyzeNews } = await import("@/services/gemini");
       const analysis = await analyzeNews(item.title, textToAnalyze);
       setAiAnalysis(analysis);
       setAnalysisCache(prev => ({ ...prev, [item.id]: analysis }));
