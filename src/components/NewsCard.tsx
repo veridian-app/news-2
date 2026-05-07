@@ -43,12 +43,21 @@ export const NewsCard = ({ item, isActive, index, onLike, onShare, onReadMore, c
     const [tapPosition, setTapPosition] = useState({ x: 0, y: 0 });
     const { trigger: haptic } = useHaptic();
 
+    const singleTapTimeout = useRef<NodeJS.Timeout | null>(null);
+
     const handleTap = (e: React.MouseEvent | React.TouchEvent) => {
+        // Ignorar taps en los botones inferiores para no solapar acciones
+        if ((e.target as HTMLElement).closest('button')) {
+            return;
+        }
+
         const now = Date.now();
         const DOUBLE_TAP_DELAY = 300;
 
         if (now - lastTap.current < DOUBLE_TAP_DELAY) {
             // Double tap detected
+            if (singleTapTimeout.current) clearTimeout(singleTapTimeout.current);
+
             const clientX = 'touches' in e ? e.touches[0].clientX : (e as React.MouseEvent).clientX;
             const clientY = 'touches' in e ? e.touches[0].clientY : (e as React.MouseEvent).clientY;
 
@@ -62,6 +71,12 @@ export const NewsCard = ({ item, isActive, index, onLike, onShare, onReadMore, c
             }
 
             setTimeout(() => setShowDoubleTapHeart(false), 800);
+        } else {
+            // Single tap: start timer for full content view
+            singleTapTimeout.current = setTimeout(() => {
+                onReadMore();
+                haptic('light');
+            }, DOUBLE_TAP_DELAY);
         }
 
         lastTap.current = now;
@@ -82,7 +97,14 @@ export const NewsCard = ({ item, isActive, index, onLike, onShare, onReadMore, c
     };
 
     const dateStr = new Date(item.date).toLocaleDateString('es-ES', { month: 'short', day: 'numeric' }).toUpperCase();
-    const cleanSource = (item.source || 'VERIDIAN').toUpperCase();
+    
+    let cleanSource = (item.source || 'VERIDIAN').toUpperCase();
+    if (cleanSource.startsWith('HTTP')) {
+        try {
+            cleanSource = new URL(item.source.toLowerCase()).hostname.replace('www.', '').toUpperCase();
+        } catch (e) {}
+    }
+    
     const displayCategory = (category || item.category || 'GENERAL').toUpperCase();
 
 
