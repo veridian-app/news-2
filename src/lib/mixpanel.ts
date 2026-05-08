@@ -10,7 +10,9 @@ export const initMixpanel = () => {
     record_sessions_percent: 100,
     record_mask_all_text: true,
     record_mask_all_inputs: true,
-    record_network: true
+    record_network: true,
+    api_host: 'https://api-eu.mixpanel.com',
+    autocapture: true
   });
 };
 
