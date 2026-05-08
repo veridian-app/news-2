@@ -6,7 +6,11 @@ export const initMixpanel = () => {
   mixpanel.init(MIXPANEL_TOKEN, {
     debug: import.meta.env.DEV,
     track_pageview: true,
-    persistence: 'localStorage'
+    persistence: 'localStorage',
+    record_sessions_percent: 100,
+    record_mask_all_text: true,
+    record_mask_all_inputs: true,
+    record_network: true
   });
 };
 
