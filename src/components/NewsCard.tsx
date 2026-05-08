@@ -135,7 +135,7 @@ export const NewsCard = ({ item, isActive, index, onLike, onShare, onReadMore, c
             </div>
 
             {/* Content Container - Centered and Professional */}
-            <div className="relative w-full h-full flex flex-col justify-between px-6 md:px-12 pt-16 pb-8 md:py-24 z-10 max-w-4xl mx-auto">
+            <div className="relative w-full h-full flex flex-col justify-start gap-4 px-6 md:px-12 pt-10 pb-8 md:py-16 z-10 max-w-4xl mx-auto">
                 
                 <div className="flex flex-col gap-4 md:gap-6">
                     {/* Meta Top Bar */}
@@ -205,7 +205,7 @@ export const NewsCard = ({ item, isActive, index, onLike, onShare, onReadMore, c
                     </motion.div>
                 </div>
 
-                <div className="flex flex-col items-center justify-end gap-8 mt-auto mb-6">
+                <div className="flex flex-col items-center justify-end gap-4 mt-0 mb-6">
                     {/* Circular Image */}
                     <motion.div
                         initial={{ opacity: 0, scale: 0.8 }}

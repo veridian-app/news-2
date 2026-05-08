@@ -17,6 +17,7 @@ import { NewsItem } from "@/types/news";
 import { IntelligencePanel } from "../components/IntelligencePanel";
 import { OnboardingOverlay } from "../components/OnboardingOverlay";
 import { normalizeCategory, detectCategory, shuffleNews, recommendNews, extractKeyPoints } from "@/utils/news-utils";
+import { mixpanelTrack } from "@/lib/mixpanel";
 
 
 
@@ -276,6 +277,11 @@ export default function VeridianNews() {
   }, [currentVisibleNews, displayNews]);
 
   const openFullContent = async (item: NewsItem) => {
+    mixpanelTrack('article_read', {
+      title: item.title,
+      category: item.category || detectCategory(item.title, item.content),
+      source: item.source || 'VERIDIAN_INTEL'
+    });
     setSelectedNews(item);
     setShowContentModal(true);
     
@@ -325,7 +331,7 @@ export default function VeridianNews() {
           .from('daily_news')
           .select('*')
           .order('created_at', { ascending: false })
-          .limit(200);
+          .limit(1000);
 
         if (error) {
           console.error("❌ Error fetching from Supabase:", error);

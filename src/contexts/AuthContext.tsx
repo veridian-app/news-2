@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { User, Session, AuthError } from '@supabase/supabase-js';
 import { supabase, isSupabaseConfigured } from '@/integrations/supabase/client';
+import { mixpanelIdentify, mixpanelPeopleSet, mixpanelReset, mixpanelTrack } from '@/lib/mixpanel';
 
 interface AuthContextType {
     user: User | null;
@@ -49,6 +50,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
                 // Create/update user profile if authenticated (non-blocking)
                 if (currentSession?.user) {
+                    mixpanelIdentify(currentSession.user.id);
+                    mixpanelPeopleSet({
+                        $email: currentSession.user.email,
+                        $name: currentSession.user.user_metadata?.full_name || currentSession.user.email?.split('@')[0],
+                        last_active_at: new Date().toISOString()
+                    });
                     upsertUserProfile(currentSession.user).catch(console.error);
                 }
             } catch (error) {
@@ -69,6 +76,21 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                 setIsLoading(false); // Set loading false immediately
 
                 if (event === 'SIGNED_IN' && currentSession?.user) {
+                    mixpanelIdentify(currentSession.user.id);
+                    mixpanelPeopleSet({
+                        $email: currentSession.user.email,
+                        $name: currentSession.user.user_metadata?.full_name || currentSession.user.email?.split('@')[0],
+                        last_active_at: new Date().toISOString()
+                    });
+                    
+                    // Check if it's a new signup
+                    if (currentSession.user.created_at) {
+                        const isNewUser = new Date(currentSession.user.created_at).getTime() > Date.now() - 60000;
+                        if (isNewUser) {
+                            mixpanelTrack('sign_up_completed', { platform: 'web' });
+                        }
+                    }
+
                     // Non-blocking profile update
                     upsertUserProfile(currentSession.user).catch(console.error);
                 }
@@ -163,6 +185,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     const signOut = async () => {
         await supabase.auth.signOut();
+        mixpanelReset();
         setUser(null);
         setSession(null);
     };

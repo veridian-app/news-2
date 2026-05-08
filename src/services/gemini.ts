@@ -19,7 +19,11 @@ export const analyzeNews = async (title: string, content: string): Promise<NewsA
     });
 
     if (response.ok) {
-      return await response.json() as NewsAnalysis;
+      const data: any = await response.json();
+      if (data.error) {
+        throw new Error(data.message || "Fallo en API Proxy");
+      }
+      return data as NewsAnalysis;
     }
     const errData = await response.json().catch(() => ({}));
     technicalDetails += `[Server: ${response.status} ${errData.error || ''}] `;

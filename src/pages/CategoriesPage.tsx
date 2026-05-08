@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { CategoryAlbum } from "@/components/categories/CategoryAlbum";
 import { CategoryView } from "@/components/categories/CategoryView";
+import { normalizeCategory, detectCategory } from "@/utils/news-utils";
 import { BottomDock } from "@/components/BottomDock";
 import { Loader2 } from "lucide-react";
 
@@ -18,34 +19,6 @@ interface NewsItem {
 
 const API_BASE =
     import.meta.env.VITE_VERIDIAN_API_BASE || window.location.origin;
-
-// Detectar categoría (copia sincronizada de VeridianNews)
-const detectCategory = (title: string, content?: string): string => {
-    const normalize = (text: string) => 
-        text.toLowerCase()
-            .normalize("NFD")
-            .replace(/[\u0300-\u036f]/g, "");
-
-    const textToAnalyze = normalize(`${title} ${content || ""}`);
-    
-    const matches = (keywords: string) => {
-        const normalizedKeywords = normalize(keywords);
-        const regex = new RegExp(`\\b(${normalizedKeywords})\\b`, "i");
-        return regex.test(textToAnalyze);
-    };
-
-    if (matches('ucrania|rusia|otan|gaza|israel|iran|geopolitica|guerra|conflicto|misil|onu|unicef|interpol|embajada|diplomacia')) return 'GEOPOLÍTICA';
-    if (matches('politica|gobierno|ley|elecciones|partido|sanchez|moncloa|congreso|senado|votos')) return 'POLÍTICA';
-    if (matches('economia|ibex|nasdaq|bolsa|mercado|pib|inflacion|banco|euribor|financiero')) return 'ECONOMÍA';
-    if (matches('sociedad|manifestacion|huelga|social|derechos|feminismo|poblacion|demografia')) return 'SOCIEDAD';
-    if (matches('deporte|futbol|champions|liga|baloncesto|nba|tenis|olimpico')) return 'DEPORTES';
-    if (matches('tecnologia|ia|ia generativa|software|hardware|silicon valley|apple|google|microsoft|startup|ciberseguridad')) return 'TECNOLOGÍA';
-    if (matches('ciencia|nasa|espacio|descubrimiento|cientifico|laboratorio|investigacion|estudio|planeta')) return 'CIENCIA';
-    if (matches('cultura|arte|cine|musica|teatro|literatura|libro|exposicion|concierto|festival')) return 'CULTURA';
-    if (matches('salud|medicina|paciente|hospital|enfermedad|vacuna|bienestar|nutricion|virus|oms')) return 'SALUD';
-
-    return "GEOPOLÍTICA"; // Default táctico
-};
 
 const CategoriesPage = () => {
     const [selectedCategory, setSelectedCategory] = useState<string | null>(null);

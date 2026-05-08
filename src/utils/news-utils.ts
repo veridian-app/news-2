@@ -11,18 +11,18 @@ export const normalizeCategory = (cat: string): string => {
   
   // Mapeo táctico total a las 6 categorías maestras
   if (normalized === 'TODO' || normalized === 'ALL') return 'TODO';
-  if (normalized === 'TECH' || normalized === 'INNOVACION' || normalized === 'TECNOLOGIA' || normalized === 'CIENCIA') return 'TECH';
-  if (normalized === 'ESPANA' || normalized === 'NACIONAL' || normalized === 'SPAIN') return 'ESPAÑA';
-  if (normalized === 'INTERNACIONAL' || normalized === 'MUNDO' || normalized === 'GLOBAL' || normalized === 'GENERAL' || normalized === 'NEWS' || normalized === 'NOTICIAS') return 'INTERNACIONAL';
-  if (normalized === 'POLITICA' || normalized === 'GOBIERNO' || normalized === 'ELECCIONES') return 'POLÍTICA';
-  if (normalized === 'DEPORTES' || normalized === 'SPORT' || normalized === 'FUTBOL' || normalized === 'TENIS' || normalized === 'BALONCESTO') return 'DEPORTES';
-  if (normalized === 'GEOPOLITICA' || normalized === 'CONFLICTOS' || normalized === 'GUERRA') return 'GEOPOLÍTICA';
+  if (normalized === 'TECH' || normalized === 'INNOVACION' || normalized === 'TECNOLOGIA' || normalized === 'CIENCIA' || normalized === 'DIGITAL' || normalized === 'IA' || normalized === 'AI') return 'TECH';
+  if (normalized === 'ESPANA' || normalized === 'NACIONAL' || normalized === 'SPAIN' || normalized === 'MADRID' || normalized === 'LOCAL') return 'ESPAÑA';
+  if (normalized === 'INTERNACIONAL' || normalized === 'MUNDO' || normalized === 'GLOBAL' || normalized === 'GENERAL' || normalized === 'NEWS' || normalized === 'NOTICIAS' || normalized === 'SOCIEDAD' || normalized === 'CULTURA') return 'INTERNACIONAL';
+  if (normalized === 'POLITICA' || normalized === 'GOBIERNO' || normalized === 'ELECCIONES' || normalized === 'PARLAMENTO' || normalized === 'CONGRESO') return 'POLÍTICA';
+  if (normalized === 'DEPORTES' || normalized === 'SPORT' || normalized === 'FUTBOL' || normalized === 'TENIS' || normalized === 'BALONCESTO' || normalized === 'MOTOR') return 'DEPORTES';
+  if (normalized === 'GEOPOLITICA' || normalized === 'CONFLICTOS' || normalized === 'GUERRA' || normalized === 'DEFENSA' || normalized === 'MILITAR' || normalized === 'DIPLOMACIA') return 'GEOPOLÍTICA';
 
   // Fallback si no encaja en ninguna
   return 'INTERNACIONAL';
 };
 
-// Detectar categoría táctica
+// Detectar categoría táctica con alta precisión
 export const detectCategory = (title: string, content?: string): string => {
   const normalizeText = (text: string) => 
     text.toLowerCase()
@@ -31,17 +31,30 @@ export const detectCategory = (title: string, content?: string): string => {
 
   const textToAnalyze = normalizeText(`${title} ${content || ''}`);
   const matches = (keywords: string) => {
-    const normalizedKeywords = normalizeText(keywords);
-    const regex = new RegExp(`\\b(${normalizedKeywords})\\b`, 'i');
-    return regex.test(textToAnalyze);
+    const normalizedKeywords = keywords.split('|').map(k => k.trim()).filter(Boolean);
+    return normalizedKeywords.some(keyword => {
+      const regex = new RegExp(`\\b${normalizeText(keyword)}\\b`, 'i');
+      return regex.test(textToAnalyze);
+    });
   };
 
-  if (matches('ucrania|rusia|otan|gaza|israel|iran|geopolitica|guerra|conflicto|misil|onu|unicef|interpol|diplomacia|eeuu|china|taiwan|zelensky|putin|biden|kremlin|pentagono')) return 'GEOPOLÍTICA';
-  if (matches('madrid|barcelona|valencia|andalucia|espana|nacional|español|española|rey|felipe|letizia|zarzuela')) return 'ESPAÑA';
-  if (matches('politica|gobierno|ley|partido|sanchez|moncloa|congreso|pp|psoe|vox|sumar|ayuso|feijoo|elecciones|diputados|senado')) return 'POLÍTICA';
-  if (matches('internacional|mundo|global|extranjero|macron|scholz|europa|latinoamerica|mexico|argentina|venezuela|colombia')) return 'INTERNACIONAL';
-  if (matches('tecnologia|tech|ia|software|hardware|apple|google|microsoft|startup|ciberseguridad|iphone|meta|elon musk|x|twitter')) return 'TECH';
-  if (matches('deportes|futbol|tenis|baloncesto|nba|champions|liga|real madrid|barça|alcaraz|nadal|alonso|formula 1|olimpicos')) return 'DEPORTES';
+  // 1. GEOPOLÍTICA (Alta Prioridad)
+  if (matches('ucrania|rusia|otan|gaza|israel|iran|geopolitica|guerra|conflicto|misil|onu|unicef|interpol|diplomacia|eeuu|china|taiwan|zelensky|putin|biden|kremlin|pentagono|defensa|militar|armamento|ejercito|invasion|frontera|nuclear|sanciones|geoeconomia|intelligence')) return 'GEOPOLÍTICA';
+  
+  // 2. TECH
+  if (matches('tecnologia|tech|ia|software|hardware|apple|google|microsoft|startup|ciberseguridad|iphone|meta|elon musk|x|twitter|openai|chatgpt|gemini|nvidia|bitcoin|crypto|blockchain|semiconductores|chips|biotech|robotica|espacial|nasa|spacex|tesla|quantum|digital')) return 'TECH';
+  
+  // 3. DEPORTES
+  if (matches('deportes|futbol|tenis|baloncesto|nba|champions|liga|real madrid|barça|atletico|alcaraz|nadal|alonso|formula 1|motogp|olimpicos|mundial|eurocopa|victoria|derrota|fichaje|marcador|entrenador')) return 'DEPORTES';
+
+  // 4. ESPAÑA
+  if (matches('madrid|barcelona|valencia|andalucia|espana|nacional|español|española|rey|felipe|letizia|zarzuela|comunidad|generalitat|pais vasco|euskadi|galicia|canarias|alicante|sevilla|malaga|zaragoza|bilbao|senado|congreso')) return 'ESPAÑA';
+  
+  // 5. POLÍTICA (General)
+  if (matches('politica|gobierno|ley|partido|sanchez|moncloa|pp|psoe|vox|sumar|ayuso|feijoo|elecciones|diputados|senado|parlamento|ministro|concejal|alcalde|voto|legislatura|reforma|justicia|supremo')) return 'POLÍTICA';
+  
+  // 6. INTERNACIONAL (Fallback natural)
+  if (matches('internacional|mundo|global|extranjero|macron|scholz|europa|latinoamerica|mexico|argentina|venezuela|colombia|eeuu|usa|africa|asia|pacifico|migracion|clima|salud|oms')) return 'INTERNACIONAL';
   
   return 'INTERNACIONAL';
 };

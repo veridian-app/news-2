@@ -10,6 +10,8 @@ import { useNavigate } from "react-router-dom";
 import { AnimatePresence, useScroll, useSpring, useTransform } from "framer-motion";
 import { useHaptic } from "@/hooks/use-haptic";
 import { cn } from "@/lib/utils";
+import { BottomDock } from "../BottomDock";
+
 
 // Transform CafeItem to ExpandableNewsItem format
 const transformToExpandable = (items: CafeItem[]): ExpandableNewsItem[] => {
@@ -215,6 +217,7 @@ export const CafeLayout = () => {
                     <LiquidProgressBar progress={progress} orientation="vertical" />
                 </div>
             </div>
+            <BottomDock />
         </div>
     );
 };
