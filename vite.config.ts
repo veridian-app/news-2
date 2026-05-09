@@ -16,17 +16,6 @@ const excludeApiPlugin = () => ({
       return 'export {}';
     }
     return null;
-  },
-  // Middleware para manejar el fallback de rutas en /veridian-news y /noticias
-  configureServer(server) {
-    server.middlewares.use((req, res, next) => {
-      if (req.url && (req.url === '/veridian-news' || req.url.startsWith('/veridian-news/')) && !req.url.includes('.')) {
-        req.url = '/index.html';
-      } else if (req.url && (req.url === '/noticias' || req.url.startsWith('/noticias/')) && !req.url.includes('.')) {
-        req.url = '/index.html'; // Redirigir también noticias a la ruta raíz
-      }
-      next();
-    });
   }
 });
 
@@ -40,6 +29,17 @@ export default defineConfig(({ mode }) => ({
         changeOrigin: true,
         secure: false,
       }
+    },
+    // Middleware para manejar el fallback de rutas en /veridian-news y /noticias
+    configureServer(server) {
+      server.middlewares.use((req, res, next) => {
+        if (req.url && (req.url === '/veridian-news' || req.url.startsWith('/veridian-news/')) && !req.url.includes('.')) {
+          req.url = '/index.html';
+        } else if (req.url && (req.url === '/noticias' || req.url.startsWith('/noticias/')) && !req.url.includes('.')) {
+          req.url = '/index.html';
+        }
+        next();
+      });
     }
   },
   plugins: [
@@ -53,19 +53,14 @@ export default defineConfig(({ mode }) => ({
       "@landing": path.resolve(__dirname, "./landing"),
       "@news": path.resolve(__dirname, "./src"),
       "@integrations": path.resolve(__dirname, "./integrations"),
-      "mixpanel-browser": "mixpanel-browser/dist/mixpanel.umd.js",
     },
   },
-  // Excluir archivos de API de Vercel del procesamiento de Vite
   optimizeDeps: {
-    include: ['mixpanel-browser'],
     exclude: ['googleapis', '@vercel/node'],
   },
-  // Configurar para ignorar archivos de API durante el desarrollo
   publicDir: 'public',
   build: {
     commonjsOptions: {
-      include: [/mixpanel-browser/, /node_modules/],
       transformMixedEsModules: true,
     },
     rollupOptions: {
@@ -74,14 +69,9 @@ export default defineConfig(({ mode }) => ({
         "veridian-news": path.resolve(__dirname, 'index.html')
       },
       external: (id) => {
-        // Asegurar que mixpanel-browser NUNCA sea externo
-        if (id.includes('mixpanel-browser')) return false;
-        
-        // Excluir archivos de la carpeta api
         if (id.includes('/api/') || id.includes('\\api\\') || id.startsWith('./api/') || id.startsWith('../api/') || id.includes('api/news')) {
           return true;
         }
-        // Excluir módulos de servidor
         if (id === 'googleapis' || id === '@vercel/node') {
           return true;
         }

@@ -1,4 +1,4 @@
-import mixpanel from 'mixpanel-browser';
+import mixpanel from './vendor/mixpanel-vendor.js';
 
 const MIXPANEL_TOKEN = '0c529cf46049b7f3f6ec202d9da26d13';
 
