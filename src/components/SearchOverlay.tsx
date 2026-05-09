@@ -1,7 +1,10 @@
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { mixpanelTrack } from "@/lib/mixpanel";
 import { createPortal } from "react-dom";
+import { useSearch } from "@/contexts/SearchContext";
+import { Search, X, TrendingUp, Zap } from "lucide-react";
 
 export const SearchOverlay = () => {
   const { searchQuery, setSearchQuery, showSearchModal, closeSearch } = useSearch();
