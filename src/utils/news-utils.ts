@@ -204,19 +204,19 @@ export const searchNews = (newsArray: NewsItem[], query: string): NewsItem[] => 
 
   const options = {
     keys: [
-      { name: 'title', weight: 2.0 },
-      { name: 'category', weight: 1.5 },
-      { name: 'summary', weight: 1.0 },
-      { name: 'content', weight: 0.8 },
+      { name: 'title', weight: 3.0 },
+      { name: 'category', weight: 2.0 },
+      { name: 'summary', weight: 1.5 },
+      { name: 'content', weight: 1.0 },
       { name: 'source', weight: 0.5 },
-      { name: 'analysis', weight: 0.7 }
+      { name: 'analysis', weight: 0.8 }
     ],
-    threshold: 0.4, // Un poco más permisivo para fuzzy matching
-    distance: 100,
+    threshold: 0.6, // Más permisivo para encontrar más artículos relacionados
+    distance: 1000, // Aumentado para buscar coincidencias más lejanas en el texto
     ignoreLocation: true,
     useExtendedSearch: true,
+    minMatchCharLength: 2,
     getFn: (obj: any, key: string | string[]) => {
-      // @ts-ignore - Fuse.config is internal but accessible
       const value = obj[key as string];
       if (typeof value === 'string') {
         return normalizeText(value);
