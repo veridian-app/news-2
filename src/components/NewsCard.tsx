@@ -133,61 +133,59 @@ export const NewsCard = memo(({ item, isActive, index, onLike, onShare, onReadMo
                 <div className="absolute inset-0 opacity-[0.05] pointer-events-none bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] bg-[length:100%_4px,3px_100%]" />
             </div>
 
-            {/* Content Container - Centered and Professional */}
-            <div className="relative w-full h-full flex flex-col justify-start gap-4 px-6 md:px-12 pt-10 pb-8 md:py-16 z-10 max-w-4xl mx-auto">
+            {/* Content Container - Optimized for mobile viewports */}
+            <div className="relative w-full h-full flex flex-col justify-between gap-2 px-6 md:px-12 pt-40 pb-28 md:pt-48 md:pb-32 z-10 max-w-4xl mx-auto overflow-hidden">
                 
-                <div className="flex flex-col gap-4 md:gap-6">
+                <div className="flex flex-col gap-3 md:gap-6 flex-1 min-h-0">
                     {/* Meta Top Bar */}
                     <motion.div 
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={isActive ? { opacity: 1, y: 0 } : {}}
-                        transition={{ delay: 0.1, duration: 0.4 }}
-                        className="flex items-center justify-between mt-2 md:mt-10"
+                        initial={{ opacity: 0 }}
+                        animate={isActive ? { opacity: 1 } : {}}
+                        transition={{ duration: 0.3 }}
+                        className="flex items-center justify-between"
                     >
                         <div className="flex items-center gap-3">
-                            <div className="flex items-center gap-2 px-3 py-1 border border-emerald-500/40 rounded-sm bg-emerald-500/5">
-                                <Shield className="w-3 h-3 text-emerald-500" />
-                                <span className="text-[9px] md:text-[10px] text-emerald-400 font-bold tracking-[0.2em]">{displayCategory}</span>
+                            <div className="flex items-center gap-2 px-2 py-0.5 border border-emerald-500/40 rounded-sm bg-emerald-500/5">
+                                <Shield className="w-2.5 h-2.5 text-emerald-500" />
+                                <span className="text-[8px] md:text-[10px] text-emerald-400 font-bold tracking-[0.2em]">{displayCategory}</span>
                             </div>
                         </div>
-                        <div className="flex items-center gap-2 px-3 py-1 border border-emerald-500/20 bg-black/40 rounded-sm text-emerald-500/70 text-[9px] md:text-[10px] font-bold tracking-widest">
-                            <Clock className="w-3 h-3" />
+                        <div className="flex items-center gap-2 px-2 py-0.5 border border-emerald-500/20 bg-black/40 rounded-sm text-emerald-500/70 text-[8px] md:text-[10px] font-bold tracking-widest">
+                            <Clock className="w-2.5 h-2.5" />
                             {dateStr}
-                            <div className="w-1.5 h-1.5 ml-2 rounded-full bg-emerald-500 animate-pulse"></div>
                         </div>
                     </motion.div>
  
-                    {/* Main Headline */}
-                    <div className="flex flex-col gap-4 md:gap-6 mt-1 md:mt-4">
+                    {/* Main Headline - Responsive sizing */}
+                    <div className="flex flex-col gap-2 md:gap-6">
                         <motion.h2
-                            initial={{ opacity: 0, y: 20 }}
+                            initial={{ opacity: 0, y: 10 }}
                             animate={isActive ? { opacity: 1, y: 0 } : {}}
-                            transition={{ delay: 0.2, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-                            className="text-[1.75rem] md:text-5xl lg:text-6xl font-black text-white leading-[1.1] tracking-wide uppercase font-mono"
-                            style={{ textShadow: '0 0 40px rgba(255,255,255,0.1)' }}
+                            transition={{ delay: 0.1, duration: 0.4 }}
+                            className="text-[1.5rem] leading-[1.2] md:text-5xl lg:text-6xl font-black text-white tracking-wide uppercase font-mono line-clamp-5"
                         >
                             {item.title}
                         </motion.h2>
                         
                         <motion.div 
                             initial={{ width: 0 }}
-                            animate={isActive ? { width: '80px' } : {}}
-                            transition={{ delay: 0.4, duration: 0.8 }}
-                            className="h-1 bg-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.8)]"
+                            animate={isActive ? { width: '40px' } : {}}
+                            transition={{ delay: 0.2, duration: 0.4 }}
+                            className="h-1 bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.6)]"
                         />
                     </div>
  
-                    {/* Summary Section (Quote Style) */}
+                    {/* Summary Section (Quote Style) - Optimized line height */}
                     <motion.div
-                        initial={{ opacity: 0, x: -10 }}
-                        animate={isActive ? { opacity: 1, x: 0 } : {}}
-                        transition={{ delay: 0.5, duration: 0.5 }}
-                        className="relative mt-1 md:mt-2 pl-4 md:pl-6 cursor-pointer group/summary"
+                        initial={{ opacity: 0 }}
+                        animate={isActive ? { opacity: 1 } : {}}
+                        transition={{ delay: 0.3, duration: 0.4 }}
+                        className="relative mt-1 pl-4 cursor-pointer group/summary flex-1 min-h-0 overflow-hidden"
                         onClick={handleReadMoreClick}
                     >
-                        <div className="absolute left-0 top-1 bottom-1 w-0.5 bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)] group-hover/summary:w-1 transition-all"></div>
-                        <p className="text-sm md:text-xl text-zinc-400 md:text-zinc-300 font-mono italic font-light leading-relaxed tracking-wide line-clamp-4 md:line-clamp-none">
-                            "{item.summary && item.summary.length > 180 ? item.summary.substring(0, 180).trim() + '...' : item.summary}"
+                        <div className="absolute left-0 top-1 bottom-1 w-0.5 bg-emerald-500/50 group-hover/summary:bg-emerald-500 transition-all"></div>
+                        <p className="text-[13px] md:text-xl text-zinc-400 md:text-zinc-300 font-mono italic font-light leading-relaxed tracking-wide line-clamp-6 overflow-hidden">
+                            "{item.summary}"
                         </p>
                     </motion.div>
  
@@ -195,57 +193,55 @@ export const NewsCard = memo(({ item, isActive, index, onLike, onShare, onReadMo
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={isActive ? { opacity: 1 } : {}}
-                        transition={{ delay: 0.6 }}
-                        className="flex items-center gap-3 mt-2 md:mt-4"
+                        transition={{ delay: 0.4 }}
+                        className="flex items-center gap-3 mt-1"
                     >
-                        <span className="text-[9px] md:text-[10px] font-bold tracking-[0.3em] text-emerald-400 uppercase">
-                            SOURCE <span className="text-emerald-500/50 mx-2">//</span> {cleanSource} <span className="text-emerald-500/50 mx-2">/</span> VERIDIAN
+                        <span className="text-[8px] md:text-[10px] font-bold tracking-[0.2em] text-emerald-400/80 uppercase truncate">
+                            SOURCE <span className="text-emerald-500/30 mx-1">//</span> {cleanSource}
                         </span>
                     </motion.div>
                 </div>
 
-                <div className="flex flex-col items-center justify-end gap-4 mt-0 mb-6">
-                    {/* Circular Image */}
+                <div className="flex flex-col items-center gap-4 shrink-0">
+                    {/* Circular Image - Smaller on mobile */}
                     <motion.div
-                        initial={{ opacity: 0, scale: 0.8 }}
+                        initial={{ opacity: 0, scale: 0.9 }}
                         animate={isActive ? { opacity: 1, scale: 1 } : {}}
-                        transition={{ delay: 0.7, duration: 0.6, type: "spring" }}
-                        className="w-32 h-32 md:w-40 md:h-40 rounded-full overflow-hidden border-2 border-emerald-500/30 relative shadow-[0_0_30px_rgba(16,185,129,0.15)]"
+                        transition={{ delay: 0.5, duration: 0.4 }}
+                        className="w-20 h-20 md:w-40 md:h-40 rounded-full overflow-hidden border border-emerald-500/20 relative shadow-[0_0_20px_rgba(16,185,129,0.1)]"
                     >
-                        <div className="absolute inset-0 bg-emerald-500/10 z-10 mix-blend-overlay"></div>
-                        <div className="absolute inset-0 border border-emerald-500/50 rounded-full z-20 m-1"></div>
+                        <div className="absolute inset-0 bg-emerald-500/5 z-10 mix-blend-overlay"></div>
                         {item.image ? (
                             <img src={item.image} alt="Intelligence visual" className="w-full h-full object-cover filter grayscale sepia-[0.2] hue-rotate-[140deg]" />
                         ) : (
                             <div className="w-full h-full bg-[#0a1510] flex items-center justify-center">
-                                <Globe className="w-10 h-10 text-emerald-500/30" />
+                                <Globe className="w-6 h-6 text-emerald-500/20" />
                             </div>
                         )}
                         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.4)_100%)] z-10"></div>
-                        {/* Radar line effect */}
-                        <div className="absolute top-1/2 left-1/2 w-full h-[1px] bg-emerald-500/40 origin-left animate-[spin_4s_linear_infinite] z-20"></div>
+                        <div className="absolute top-1/2 left-1/2 w-full h-[0.5px] bg-emerald-500/30 origin-left animate-[spin_6s_linear_infinite] z-20"></div>
                     </motion.div>
 
                     {/* Interactive Footer Row */}
                     <motion.div 
-                        initial={{ opacity: 0, y: 20 }}
+                        initial={{ opacity: 0, y: 10 }}
                         animate={isActive ? { opacity: 1, y: 0 } : {}}
-                        transition={{ delay: 0.8, duration: 0.5 }}
-                        className="flex items-center gap-2 w-full"
+                        transition={{ delay: 0.6, duration: 0.3 }}
+                        className="flex items-center gap-2 w-full max-w-sm"
                     >
                         <button
                             onClick={handleReadMoreClick}
-                            className="flex-1 h-14 bg-emerald-500 text-black hover:bg-emerald-400 transition-all flex items-center justify-center gap-3 rounded-sm font-black text-[11px] uppercase tracking-[0.2em] pointer-events-auto active:scale-[0.98] shadow-[0_0_20px_rgba(16,185,129,0.4)]"
+                            className="flex-1 h-12 bg-emerald-500 text-black active:bg-emerald-400 transition-all flex items-center justify-center gap-3 rounded-sm font-black text-[10px] uppercase tracking-[0.2em] pointer-events-auto shadow-[0_0_15px_rgba(16,185,129,0.3)]"
                         >
-                            <BookOpen className="w-4 h-4" />
+                            <BookOpen className="w-3.5 h-3.5" />
                             ACCESS_INTEL
                         </button>
                         
                         <button
                             onClick={handleShareClick}
-                            className="w-14 h-14 bg-black/40 border border-emerald-500/30 flex items-center justify-center text-emerald-500 transition-all rounded-sm pointer-events-auto active:scale-[0.95] hover:bg-emerald-500/10"
+                            className="w-12 h-12 bg-black/40 border border-emerald-500/30 flex items-center justify-center text-emerald-500 active:bg-emerald-500/10 rounded-sm pointer-events-auto"
                         >
-                            <Share2 className="w-4 h-4" />
+                            <Share2 className="w-3.5 h-3.5" />
                         </button>
                     </motion.div>
                 </div>

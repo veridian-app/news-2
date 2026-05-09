@@ -438,89 +438,54 @@ export default function VeridianNews() {
           className="flex-1 flex flex-col overflow-hidden"
         >
             <motion.header 
-              initial={{ y: -100 }}
-              animate={{ y: 0 }}
-              className="w-full z-[100] bg-[#020504]/90 backdrop-blur-xl border-b border-emerald-500/10 flex flex-col"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="fixed top-0 left-0 right-0 z-[100] bg-gradient-to-b from-[#020504] to-transparent pointer-events-none"
             >
-              <div className="px-4 py-2 flex items-center justify-between">
+              <div className="px-4 py-3 flex items-center justify-between pointer-events-auto">
                 <div className="flex items-center gap-3">
-                  <div className="flex items-center gap-2 border-l-2 border-emerald-500 pl-3">
+                  <div className="flex items-center gap-2 border-l-2 border-emerald-500 pl-3 bg-black/20 backdrop-blur-md pr-4 py-1 rounded-r-md">
                     <div className="flex flex-col">
                       <div className="flex items-center gap-2">
-                        <Globe className="w-4 h-4 text-emerald-500" />
-                        <span className="text-[11px] font-black text-emerald-500 tracking-[0.2em] uppercase italic">Veridian_System_v2</span>
+                        <Globe className="w-3.5 h-3.5 text-emerald-500" />
+                        <span className="text-[10px] font-black text-emerald-500 tracking-[0.2em] uppercase italic">Veridian_System_v2</span>
                       </div>
-                      <span className="text-[8px] font-mono text-emerald-500/40 tracking-[0.4em] mt-0.5 uppercase">• Active Tactical Feed</span>
+                      <span className="text-[7px] font-mono text-emerald-500/40 tracking-[0.4em] mt-0.5 uppercase">• Tactical Feed Active</span>
                     </div>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-3">
-                  {searchQuery && (
-                    <motion.div 
-                      initial={{ opacity: 0, x: 20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      className="hidden sm:flex items-center gap-2 px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 rounded-full"
-                    >
-                      <Search className="w-2.5 h-2.5 text-emerald-500" />
-                      <span className="text-[9px] font-mono text-emerald-500 uppercase tracking-tighter max-w-[100px] truncate">
-                        {searchQuery}
-                      </span>
-                      <button 
-                        onClick={() => setSearchQuery('')}
-                        className="ml-1 p-0.5 hover:bg-emerald-500/20 rounded-full text-emerald-500/50 hover:text-emerald-500"
-                      >
-                        <X className="w-2.5 h-2.5" />
-                      </button>
-                    </motion.div>
-                  )}
-                  
-                  <div className="flex items-center gap-2 px-3 py-1 bg-orange-500/5 border border-orange-500/20 rounded-sm">
-                    <Zap className="w-2.5 h-2.5 text-orange-500 fill-orange-500" />
-                    <div className="flex flex-col">
-                      <span className="text-[6px] font-black text-orange-500/60 uppercase leading-none tracking-tighter">Readiness_Streak</span>
-                      <span className="text-[9px] font-black text-orange-500 uppercase leading-none mt-0.5">0_DAYS</span>
-                    </div>
-                  </div>
+                <div className="flex items-center gap-2 px-3 py-1 bg-orange-500/10 border border-orange-500/20 rounded-sm backdrop-blur-md pointer-events-auto">
+                  <Zap className="w-2.5 h-2.5 text-orange-500 fill-orange-500" />
+                  <span className="text-[8px] font-black text-orange-500 uppercase tracking-tighter">0_DAYS</span>
                 </div>
               </div>
 
-              <div className="w-full py-1.5 bg-emerald-500/5 border-y border-emerald-500/10 overflow-hidden relative">
+              <div className="w-full py-1 bg-emerald-500/5 border-y border-emerald-500/10 overflow-hidden relative backdrop-blur-sm pointer-events-auto">
                 <div className="flex animate-marquee whitespace-nowrap">
-                  <span className="text-[9px] font-mono text-white/60 font-bold tracking-[0.3em] uppercase pr-20">{marqueeText} // SYSTEM_STABLE // NO_THREATS_DETECTED</span>
-                  <span className="text-[9px] font-mono text-white/60 font-bold tracking-[0.3em] uppercase pr-20">{marqueeText} // SYSTEM_STABLE // NO_THREATS_DETECTED</span>
-                  <span className="text-[9px] font-mono text-white/60 font-bold tracking-[0.3em] uppercase pr-20">{marqueeText} // SYSTEM_STABLE // NO_THREATS_DETECTED</span>
-                  <span className="text-[9px] font-mono text-white/60 font-bold tracking-[0.3em] uppercase pr-20">{marqueeText} // SYSTEM_STABLE // NO_THREATS_DETECTED</span>
+                  <span className="text-[8px] font-mono text-white/40 font-bold tracking-[0.3em] uppercase pr-20">{marqueeText} // SYSTEM_STABLE</span>
+                  <span className="text-[8px] font-mono text-white/40 font-bold tracking-[0.3em] uppercase pr-20">{marqueeText} // SYSTEM_STABLE</span>
                 </div>
               </div>
 
               <div 
                 ref={categoryBarRef}
-                className="px-4 py-2 overflow-x-auto no-scrollbar flex items-center gap-2 cursor-grab active:cursor-grabbing"
-                onWheel={(e) => {
-                  if (categoryBarRef.current) {
-                    categoryBarRef.current.scrollLeft += e.deltaY;
-                  }
-                }}
+                className="px-4 py-3 overflow-x-auto no-scrollbar flex items-center gap-2 pointer-events-auto"
               >
                 {categories.map(cat => (
                   <button
                     key={cat}
                     onClick={() => {
                       if (activeCategory === cat) {
-                        // Si ya está activa, volver al inicio
                         feedContainerRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
                         return;
                       }
                       startTransition(() => {
                         setActiveCategory(cat);
-                        // Resetear scroll al inicio de la nueva categoría
-                        if (feedContainerRef.current) {
-                          feedContainerRef.current.scrollTop = 0;
-                        }
+                        if (feedContainerRef.current) feedContainerRef.current.scrollTop = 0;
                       });
                     }}
-                    className={`px-4 py-1 rounded-full text-[9px] font-black tracking-[0.15em] uppercase transition-all whitespace-nowrap active:scale-95 ${activeCategory === cat ? 'bg-emerald-500 text-black shadow-[0_0_15px_rgba(16,185,129,0.3)]' : 'bg-white/5 text-white/30 hover:text-white'}`}
+                    className={`px-3 py-1 rounded-full text-[8px] font-black tracking-[0.1em] uppercase transition-all whitespace-nowrap active:scale-95 ${activeCategory === cat ? 'bg-emerald-500 text-black' : 'bg-white/5 text-white/30 backdrop-blur-md'}`}
                   >
                     {cat}
                   </button>
@@ -528,10 +493,10 @@ export default function VeridianNews() {
               </div>
             </motion.header>
 
-            <main className="flex-1 overflow-hidden relative flex flex-col">
+            <main className="h-full w-full overflow-hidden relative">
               <div 
                 ref={feedContainerRef}
-                className="flex-1 overflow-y-scroll snap-y snap-mandatory scroll-smooth no-scrollbar"
+                className="h-full w-full overflow-y-scroll snap-y snap-mandatory scroll-smooth no-scrollbar"
               >
                 {displayNews.length === 0 ? (
                   <div className="h-full flex flex-col items-center justify-center gap-4 p-8">
