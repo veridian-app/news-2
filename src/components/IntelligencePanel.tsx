@@ -194,6 +194,7 @@ export const IntelligencePanel = ({
                     </div>
                   </div>
                 </div>
+              </div>
               {/* Bottom Navigation / Close Button */}
               <div className="mt-20 pt-12 border-t border-white/10 flex flex-col items-center gap-6 pb-12">
                 <div className="text-[10px] font-black text-white/20 uppercase tracking-[0.4em]">Fin_de_Transmisión</div>
