@@ -74,6 +74,7 @@ export default function VeridianNews() {
   const categoryBarRef = useRef<HTMLDivElement>(null);
   const loadingProgressRef = useRef<HTMLDivElement>(null);
   const prefetchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const isPrefetchingRef = useRef<boolean>(false);
 
   const [sortBy, setSortBy] = useState<'recommended' | 'recent'>('recommended');
   const [activeCategory, setActiveCategory] = useState<string>('TODO');
@@ -240,33 +241,30 @@ export default function VeridianNews() {
     if (!currentVisibleNews || displayNews.length === 0) return;
     
     const prefetchActiveAndNext = async () => {
+      if (isPrefetchingRef.current) return;
+      
       const currentIndex = displayNews.findIndex(n => n.id === currentVisibleNews.id);
       if (currentIndex === -1) return;
 
-      // Prefetch current and next 2 news items
-      const itemsToPrefetch = displayNews.slice(currentIndex, currentIndex + 3);
-      
+      // Prefetch ONLY the next news item to avoid rate limits
+      const item = displayNews[currentIndex + 1];
+      if (!item || analysisCache[item.id]) return;
+
+      isPrefetchingRef.current = true;
       try {
         const { analyzeNews } = await import("@/services/gemini");
-        
-        for (const item of itemsToPrefetch) {
-          // Si ya está en caché, saltar
-          if (analysisCache[item.id]) continue;
-
-          const cleanSummary = (item.summary || '').replace(/\.\.\.$/, '').trim();
-          const cleanAnalysis = (item.analysis || '').replace(/\.\.\.$/, '').trim();
-          const textToAnalyze = (item.content && item.content !== 'Contenido restringido.') 
-            ? item.content 
-            : `CONTEXTO_TÁCTICO: ${cleanAnalysis} | RESUMEN_ADICIONAL: ${cleanSummary}`;
-            
-          const analysis = await analyzeNews(item.title, textToAnalyze);
-          setAnalysisCache(prev => ({ ...prev, [item.id]: analysis }));
+        const cleanSummary = (item.summary || '').replace(/\.\.\.$/, '').trim();
+        const cleanAnalysis = (item.analysis || '').replace(/\.\.\.$/, '').trim();
+        const textToAnalyze = (item.content && item.content !== 'Contenido restringido.') 
+          ? item.content 
+          : `CONTEXTO_TÁCTICO: ${cleanAnalysis} | RESUMEN_ADICIONAL: ${cleanSummary}`;
           
-          // Pausa entre peticiones para no saturar la API
-          await new Promise(resolve => setTimeout(resolve, 1500));
-        }
+        const analysis = await analyzeNews(item.title, textToAnalyze);
+        setAnalysisCache(prev => ({ ...prev, [item.id]: analysis }));
       } catch (err) {
         console.warn("Prefetch warning:", err);
+      } finally {
+        isPrefetchingRef.current = false;
       }
     };
     
