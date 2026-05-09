@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
 import { DockVisibilityProvider } from "./contexts/DockVisibilityContext";
 import { SearchProvider } from "./contexts/SearchContext";
+import { SearchOverlay } from "./components/SearchOverlay";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 
 import VeridianLanding from "./pages/VeridianLanding";
@@ -31,6 +32,7 @@ const App = () => (
       <BrowserRouter>
         <AuthProvider>
           <SearchProvider>
+            <SearchOverlay />
             <DockVisibilityProvider>
               <Routes>
                 {/* Public routes */}

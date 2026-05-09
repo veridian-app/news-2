@@ -1,5 +1,6 @@
 // News processing utilities for Veridian Systems
 import { NewsItem } from "@/types/news";
+import Fuse from "fuse.js";
 
 // Helper to normalize categories (quitar acentos, mayúsculas y mapear sinónimos)
 export const normalizeCategory = (cat: string): string => {
@@ -180,4 +181,52 @@ export const extractKeyPoints = (text: string): string[] => {
   }
 
   return result;
+};
+
+/**
+ * Normaliza texto para comparaciones tácticas (quitar acentos, etc)
+ */
+export const normalizeText = (text: string): string => {
+  return text
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim();
+};
+
+/**
+ * Realiza una búsqueda táctica de alta precisión usando Fuse.js
+ */
+export const searchNews = (newsArray: NewsItem[], query: string): NewsItem[] => {
+  if (!query || !query.trim()) return newsArray;
+
+  const normalizedQuery = normalizeText(query);
+
+  const options = {
+    keys: [
+      { name: 'title', weight: 2.0 },
+      { name: 'category', weight: 1.5 },
+      { name: 'summary', weight: 1.0 },
+      { name: 'content', weight: 0.8 },
+      { name: 'source', weight: 0.5 },
+      { name: 'analysis', weight: 0.7 }
+    ],
+    threshold: 0.4, // Un poco más permisivo para fuzzy matching
+    distance: 100,
+    ignoreLocation: true,
+    useExtendedSearch: true,
+    getFn: (obj: any, key: string | string[]) => {
+      // @ts-ignore - Fuse.config is internal but accessible
+      const value = obj[key as string];
+      if (typeof value === 'string') {
+        return normalizeText(value);
+      }
+      return value;
+    }
+  };
+
+  const fuse = new Fuse(newsArray, options);
+  const results = fuse.search(normalizedQuery);
+  
+  return results.map(result => result.item);
 };

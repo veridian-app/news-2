@@ -16,7 +16,7 @@ import { useSearch } from "@/contexts/SearchContext";
 import { NewsItem } from "@/types/news";
 import { IntelligencePanel } from "../components/IntelligencePanel";
 import { OnboardingOverlay } from "../components/OnboardingOverlay";
-import { normalizeCategory, detectCategory, shuffleNews, recommendNews, extractKeyPoints } from "@/utils/news-utils";
+import { normalizeCategory, detectCategory, shuffleNews, recommendNews, extractKeyPoints, searchNews } from "@/utils/news-utils";
 import { mixpanelTrack } from "@/lib/mixpanel";
 
 
@@ -85,7 +85,11 @@ export default function VeridianNews() {
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearchQuery(searchQuery);
-    }, 300); // 300ms debounce
+      // Auto-resetear categoría a TODO si el usuario empieza a buscar
+      if (searchQuery.trim().length > 0) {
+        setActiveCategory('TODO');
+      }
+    }, 300);
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
@@ -97,37 +101,32 @@ export default function VeridianNews() {
 
   // Calcular noticias recomendadas basándose en preferencias y búsqueda
   const news = useMemo(() => {
-    console.log('📰 Calculando noticias, rawNews.length:', rawNews.length);
     if (rawNews.length === 0) {
-      console.log('⚠️ Esperando datos de la base de datos (Supabase)...');
       return [];
     }
 
-    // Primero filtrar por búsqueda si hay query (usando debounced para performance)
-    let filteredNews = rawNews;
-    if (debouncedSearchQuery.trim()) {
-      const query = debouncedSearchQuery.toLowerCase().trim();
-      filteredNews = rawNews.filter(item =>
-        item.title.toLowerCase().includes(query) ||
-        item.summary?.toLowerCase().includes(query) ||
-        item.source?.toLowerCase().includes(query) ||
-        item.content?.toLowerCase().includes(query)
-      );
-      console.log(`🔍 Búsqueda "${debouncedSearchQuery}": ${filteredNews.length} resultados`);
+    // Primero filtrar por búsqueda si hay query (usando Fuse.js para máxima precisión)
+    let searchResults = rawNews;
+    const isSearching = debouncedSearchQuery.trim().length > 0;
+
+    if (isSearching) {
+      searchResults = searchNews(rawNews, debouncedSearchQuery);
+      console.log(`🔍 Búsqueda táctica "${debouncedSearchQuery}": ${searchResults.length} resultados`);
+      // Si estamos buscando, devolvemos los resultados de Fuse directamente (que ya vienen ordenados por relevancia)
+      return searchResults;
     }
 
     // Si el usuario elige "Recientes", forzar orden cronológico
     if (sortBy === 'recent') {
-      console.log('📅 Ordenando por fecha (Recientes)');
-      return [...filteredNews].sort((a, b) => {
+      return [...rawNews].sort((a, b) => {
         return new Date(b.date).getTime() - new Date(a.date).getTime();
       });
     }
 
     if (userPreferences.size === 0) {
-      return shuffleNews([...filteredNews]);
+      return shuffleNews([...rawNews]);
     }
-    return recommendNews([...filteredNews], userPreferences, likedNewsIds);
+    return recommendNews([...rawNews], userPreferences, likedNewsIds);
   }, [rawNews, userPreferences, likedNewsIds, sortBy, debouncedSearchQuery]);
 
   const categories = ['TODO', 'GEOPOLÍTICA', 'ESPAÑA', 'POLÍTICA', 'INTERNACIONAL', 'TECH', 'DEPORTES'];
@@ -443,6 +442,25 @@ export default function VeridianNews() {
                 </div>
 
                 <div className="flex items-center gap-3">
+                  {searchQuery && (
+                    <motion.div 
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      className="hidden sm:flex items-center gap-2 px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 rounded-full"
+                    >
+                      <Search className="w-2.5 h-2.5 text-emerald-500" />
+                      <span className="text-[9px] font-mono text-emerald-500 uppercase tracking-tighter max-w-[100px] truncate">
+                        {searchQuery}
+                      </span>
+                      <button 
+                        onClick={() => setSearchQuery('')}
+                        className="ml-1 p-0.5 hover:bg-emerald-500/20 rounded-full text-emerald-500/50 hover:text-emerald-500"
+                      >
+                        <X className="w-2.5 h-2.5" />
+                      </button>
+                    </motion.div>
+                  )}
+                  
                   <div className="flex items-center gap-2 px-3 py-1 bg-orange-500/5 border border-orange-500/20 rounded-sm">
                     <Zap className="w-2.5 h-2.5 text-orange-500 fill-orange-500" />
                     <div className="flex flex-col">
@@ -484,8 +502,25 @@ export default function VeridianNews() {
               >
                 {displayNews.length === 0 ? (
                   <div className="h-full flex flex-col items-center justify-center gap-4 p-8">
-                    <Brain className="w-12 h-12 text-white/10 animate-pulse" />
-                    <p className="text-[10px] font-black uppercase tracking-[0.4em] text-white/20">Esperando transmision de datos...</p>
+                    {debouncedSearchQuery ? (
+                      <>
+                        <Search className="w-12 h-12 text-white/10" />
+                        <p className="text-[10px] font-black uppercase tracking-[0.4em] text-white/20 text-center">
+                          Cero coincidencias tácticas para: <span className="text-emerald-500/40">"{debouncedSearchQuery}"</span>
+                        </p>
+                        <button 
+                          onClick={() => setSearchQuery('')}
+                          className="mt-4 px-6 py-2 border border-emerald-500/20 rounded-full text-[9px] font-black uppercase tracking-widest text-emerald-500/60 hover:bg-emerald-500/10 transition-all"
+                        >
+                          Limpiar_Búsqueda
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        <Brain className="w-12 h-12 text-white/10 animate-pulse" />
+                        <p className="text-[10px] font-black uppercase tracking-[0.4em] text-white/20">Esperando transmision de datos...</p>
+                      </>
+                    )}
                   </div>
                 ) : (
                   displayNews.map((item, index) => (
