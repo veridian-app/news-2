@@ -17,7 +17,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (!API_KEY) return res.status(200).json({ error: true, message: 'GEMINI_API_KEY no configurada' });
 
   // LISTA DE MODELOS DE NUEVA GENERACIÓN (Basada en tus permisos reales)
-  const models = ["gemini-2.0-flash", "gemini-flash-latest", "gemini-2.5-flash", "gemini-pro-latest"];
+  const models = ["gemini-1.5-flash", "gemini-1.5-pro", "gemini-2.0-flash-exp"];
   let lastError = "";
 
   for (const modelName of models) {

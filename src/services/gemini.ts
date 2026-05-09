@@ -40,7 +40,7 @@ export const analyzeNews = async (title: string, content: string): Promise<NewsA
   }
 
   // LISTA DE MODELOS DE NUEVA GENERACIÓN (Basada en tus permisos reales)
-  const modelsToTry = ["gemini-2.0-flash", "gemini-flash-latest", "gemini-2.5-flash", "gemini-pro-latest"];
+  const modelsToTry = ["gemini-1.5-flash", "gemini-1.5-pro", "gemini-2.0-flash-exp"];
   
   for (const modelName of modelsToTry) {
     try {
