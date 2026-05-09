@@ -109,31 +109,31 @@ export const NewsCard = memo(({ item, isActive, index, onLike, onShare, onReadMo
 
     return (
         <div
-            className="relative h-[100dvh] w-full snap-start snap-always overflow-hidden bg-[#020504] select-none font-mono flex items-center justify-center"
+            className="relative h-full w-full bg-[#020504] select-none font-mono flex items-center justify-center overflow-hidden"
             onClick={handleTap}
-            style={{ willChange: 'transform' }}
+            style={{ 
+              willChange: 'transform, opacity',
+              transform: 'translateZ(0)'
+            }}
         >
             <DoubleTapOverlay showLike={showDoubleTapHeart} position={tapPosition} />
 
-            {/* Premium Background Effects */}
-            <div className="absolute inset-0 pointer-events-none">
-                {/* Mesh Gradient */}
-                <div className="absolute top-[-20%] left-[-20%] w-[140%] h-[140%] opacity-20" style={{
-                    background: 'radial-gradient(circle at 50% 50%, #10B981 0%, transparent 50%), radial-gradient(circle at 80% 20%, #065F46 0%, transparent 40%)',
-                    filter: 'blur(80px)'
+            {/* Optimized Background Effects */}
+            <div className="absolute inset-0 pointer-events-none overflow-hidden">
+                {/* Mesh Gradient - Simplified */}
+                <div className="absolute inset-0 opacity-[0.12]" style={{
+                    background: 'radial-gradient(circle at 50% 50%, #10B981 0%, transparent 70%)',
+                    filter: 'blur(60px)'
                 }} />
                 
-                {/* Fine Grid */}
-                <div className="absolute inset-0 opacity-[0.03]" style={{
+                {/* Fine Grid - Very light for performance */}
+                <div className="absolute inset-0 opacity-[0.02]" style={{
                     backgroundImage: 'linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)',
-                    backgroundSize: '40px 40px'
+                    backgroundSize: '30px 30px'
                 }} />
-
-                {/* Scanlines Effect */}
-                <div className="absolute inset-0 opacity-[0.05] pointer-events-none bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] bg-[length:100%_4px,3px_100%]" />
             </div>
 
-            {/* Content Container - Optimized for mobile viewports */}
+            {/* Content Container - Immersive full-screen */}
             <div className="relative w-full h-full flex flex-col justify-between gap-2 px-6 md:px-12 pt-40 pb-28 md:pt-48 md:pb-32 z-10 max-w-4xl mx-auto overflow-hidden">
                 
                 <div className="flex flex-col gap-3 md:gap-6 flex-1 min-h-0">
@@ -141,7 +141,7 @@ export const NewsCard = memo(({ item, isActive, index, onLike, onShare, onReadMo
                     <motion.div 
                         initial={{ opacity: 0 }}
                         animate={isActive ? { opacity: 1 } : {}}
-                        transition={{ duration: 0.3 }}
+                        transition={{ duration: 0.2 }}
                         className="flex items-center justify-between"
                     >
                         <div className="flex items-center gap-3">
@@ -156,12 +156,12 @@ export const NewsCard = memo(({ item, isActive, index, onLike, onShare, onReadMo
                         </div>
                     </motion.div>
  
-                    {/* Main Headline - Responsive sizing */}
+                    {/* Main Headline */}
                     <div className="flex flex-col gap-2 md:gap-6">
                         <motion.h2
                             initial={{ opacity: 0, y: 10 }}
                             animate={isActive ? { opacity: 1, y: 0 } : {}}
-                            transition={{ delay: 0.1, duration: 0.4 }}
+                            transition={{ duration: 0.3, ease: "easeOut" }}
                             className="text-[1.5rem] leading-[1.2] md:text-5xl lg:text-6xl font-black text-white tracking-wide uppercase font-mono line-clamp-5"
                         >
                             {item.title}
@@ -170,16 +170,16 @@ export const NewsCard = memo(({ item, isActive, index, onLike, onShare, onReadMo
                         <motion.div 
                             initial={{ width: 0 }}
                             animate={isActive ? { width: '40px' } : {}}
-                            transition={{ delay: 0.2, duration: 0.4 }}
+                            transition={{ delay: 0.1, duration: 0.3 }}
                             className="h-1 bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.6)]"
                         />
                     </div>
  
-                    {/* Summary Section (Quote Style) - Optimized line height */}
+                    {/* Summary Section */}
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={isActive ? { opacity: 1 } : {}}
-                        transition={{ delay: 0.3, duration: 0.4 }}
+                        transition={{ delay: 0.2, duration: 0.3 }}
                         className="relative mt-1 pl-4 cursor-pointer group/summary flex-1 min-h-0 overflow-hidden"
                         onClick={handleReadMoreClick}
                     >
@@ -193,7 +193,7 @@ export const NewsCard = memo(({ item, isActive, index, onLike, onShare, onReadMo
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={isActive ? { opacity: 1 } : {}}
-                        transition={{ delay: 0.4 }}
+                        transition={{ delay: 0.3 }}
                         className="flex items-center gap-3 mt-1"
                     >
                         <span className="text-[8px] md:text-[10px] font-bold tracking-[0.2em] text-emerald-400/80 uppercase truncate">
@@ -203,35 +203,34 @@ export const NewsCard = memo(({ item, isActive, index, onLike, onShare, onReadMo
                 </div>
 
                 <div className="flex flex-col items-center gap-4 shrink-0">
-                    {/* Circular Image - Smaller on mobile */}
+                    {/* Circular Image - Performance optimized radar */}
                     <motion.div
-                        initial={{ opacity: 0, scale: 0.9 }}
+                        initial={{ opacity: 0, scale: 0.95 }}
                         animate={isActive ? { opacity: 1, scale: 1 } : {}}
-                        transition={{ delay: 0.5, duration: 0.4 }}
+                        transition={{ delay: 0.4, duration: 0.3 }}
                         className="w-20 h-20 md:w-40 md:h-40 rounded-full overflow-hidden border border-emerald-500/20 relative shadow-[0_0_20px_rgba(16,185,129,0.1)]"
                     >
-                        <div className="absolute inset-0 bg-emerald-500/5 z-10 mix-blend-overlay"></div>
                         {item.image ? (
-                            <img src={item.image} alt="Intelligence visual" className="w-full h-full object-cover filter grayscale sepia-[0.2] hue-rotate-[140deg]" />
+                            <img src={item.image} alt="Intelligence visual" className="w-full h-full object-cover filter grayscale" loading="lazy" />
                         ) : (
                             <div className="w-full h-full bg-[#0a1510] flex items-center justify-center">
                                 <Globe className="w-6 h-6 text-emerald-500/20" />
                             </div>
                         )}
-                        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.4)_100%)] z-10"></div>
-                        <div className="absolute top-1/2 left-1/2 w-full h-[0.5px] bg-emerald-500/30 origin-left animate-[spin_6s_linear_infinite] z-20"></div>
+                        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.6)_100%)] z-10"></div>
+                        <div className="absolute top-1/2 left-1/2 w-full h-[0.5px] bg-emerald-500/30 origin-left animate-[spin_8s_linear_infinite] z-20"></div>
                     </motion.div>
 
                     {/* Interactive Footer Row */}
                     <motion.div 
                         initial={{ opacity: 0, y: 10 }}
                         animate={isActive ? { opacity: 1, y: 0 } : {}}
-                        transition={{ delay: 0.6, duration: 0.3 }}
+                        transition={{ delay: 0.5, duration: 0.2 }}
                         className="flex items-center gap-2 w-full max-w-sm"
                     >
                         <button
                             onClick={handleReadMoreClick}
-                            className="flex-1 h-12 bg-emerald-500 text-black active:bg-emerald-400 transition-all flex items-center justify-center gap-3 rounded-sm font-black text-[10px] uppercase tracking-[0.2em] pointer-events-auto shadow-[0_0_15px_rgba(16,185,129,0.3)]"
+                            className="flex-1 h-12 bg-emerald-500 text-black active:bg-emerald-400 transition-all flex items-center justify-center gap-3 rounded-sm font-black text-[10px] uppercase tracking-[0.2em] pointer-events-auto"
                         >
                             <BookOpen className="w-3.5 h-3.5" />
                             ACCESS_INTEL

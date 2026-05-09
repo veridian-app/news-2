@@ -159,46 +159,33 @@
     transform: scale(0.95);
 }
 
-/* Feed Container - Estilo TikTok Mejorado con scroll más fluido */
+/* Feed Container - Optimized TikTok-style fluid scrolling */
 .veridian-news-container .feed-container {
-    margin-top: 0;
-    padding-top: 0;
-    padding-bottom: calc(140px + env(safe-area-inset-bottom)); /* Espacio para el BottomDock flotante elevado */
-    /* Usar dvh (dynamic viewport height) para adaptarse a barras del navegador */
+    margin: 0;
+    padding: 0;
     height: 100dvh;
-    min-height: 100svh; /* Fallback para navegadores sin soporte dvh */
-    max-height: 100vh; /* Fallback para navegadores antiguos */
-    overflow-y: scroll;
+    width: 100%;
+    overflow-y: auto;
     overflow-x: hidden;
     scroll-snap-type: y mandatory;
     scroll-snap-stop: always;
     -webkit-overflow-scrolling: touch;
-    scrollbar-width: thin; /* Firefox */
-    scrollbar-color: hsl(var(--border)) transparent;
-    -ms-overflow-style: auto; /* IE/Edge */
+    scrollbar-width: none;
+    -ms-overflow-style: none;
     overscroll-behavior-y: contain;
-    overscroll-behavior-x: none;
     will-change: scroll-position;
-    transform: translateZ(0); /* Aceleración por hardware */
-    -webkit-transform: translateZ(0);
-    background: hsl(var(--background));
-    /* Mejoras de rendimiento */
-    contain: layout style paint;
+    transform: translateZ(0);
+    background: #020504;
+    scroll-behavior: auto; /* Evitar conflictos con snap-scroll */
+    
+    /* Performance optimizations */
+    contain: strict;
     backface-visibility: hidden;
-    -webkit-backface-visibility: hidden;
     perspective: 1000px;
-    -webkit-perspective: 1000px;
-    /* Scroll suave mejorado */
-    scroll-padding-top: 0;
-    /* Momentum scrolling mejorado para iOS */
-    -webkit-overflow-scrolling: touch;
-    /* Prevenir scroll horizontal accidental */
-    touch-action: pan-y;
-    /* Mejorar fluidez del scroll */
-    -webkit-scroll-snap-type: y mandatory;
-    scroll-snap-type: y mandatory;
-    /* Asegurar que el contenido sea visible */
-    box-sizing: border-box;
+}
+
+.veridian-news-container .feed-container::-webkit-scrollbar {
+    display: none;
 }
 
 .veridian-news-container .feed-container::-webkit-scrollbar {
@@ -225,38 +212,22 @@
     background: hsl(var(--foreground) / 0.5);
 }
 
-/* News Card - Estilo Tarjeta con Expansión */
+/* News Card - Immersive snap unit */
 .veridian-news-container .news-card {
     width: 100%;
-    min-height: 100dvh;
     height: 100dvh;
-    max-height: 100dvh;
-    /* Fallbacks */
-    min-height: 100svh;
-    height: 100svh;
-    max-height: 100svh;
-    min-height: 100vh;
-    height: 100vh;
-    max-height: 100vh;
+    min-height: 100dvh;
     position: relative;
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    touch-action: pan-y;
     scroll-snap-align: start;
     scroll-snap-stop: always;
-    scroll-margin-top: 0;
-    flex-shrink: 0;
     transform: translateZ(0);
-    -webkit-transform: translateZ(0);
-    will-change: transform, height, margin-top;
-    box-sizing: border-box;
-    cursor: pointer;
-    /* Prevenir selección accidental durante scroll */
+    will-change: transform;
+    contain: layout size;
     user-select: none;
     -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
 }
 
 /* Card Colapsada - Formato Tarjeta Compacta */
