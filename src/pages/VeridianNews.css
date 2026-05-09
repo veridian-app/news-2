@@ -174,14 +174,16 @@
     -ms-overflow-style: none;
     overscroll-behavior-y: contain;
     will-change: scroll-position;
-    transform: translateZ(0);
+    transform: translate3d(0, 0, 0);
     background: #020504;
-    scroll-behavior: auto; /* Evitar conflictos con snap-scroll */
+    scroll-behavior: auto;
     
-    /* Performance optimizations */
+    /* Extreme performance optimizations */
     contain: strict;
     backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
     perspective: 1000px;
+    -webkit-perspective: 1000px;
 }
 
 .veridian-news-container .feed-container::-webkit-scrollbar {
