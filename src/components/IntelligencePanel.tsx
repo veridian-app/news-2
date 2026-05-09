@@ -91,7 +91,16 @@ export const IntelligencePanel = ({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
           >
-            <div className="max-w-3xl mx-auto px-6 py-12 md:px-12 space-y-12">
+            <div className="max-w-3xl mx-auto px-6 py-8 md:px-12 space-y-10">
+              {/* Top Quick Close */}
+              <button 
+                onClick={handleClose}
+                className="group flex items-center gap-3 px-6 py-3 bg-white/5 border border-white/10 rounded-full text-white/40 hover:text-emerald-400 hover:bg-emerald-500/10 hover:border-emerald-500/20 transition-all active:scale-95"
+              >
+                <X className="w-4 h-4" />
+                <span className="text-[10px] font-black uppercase tracking-[0.2em]">Cerrar_Expediente</span>
+              </button>
+
               {selectedNews.image && (
                 <div className="w-full aspect-video rounded-[40px] overflow-hidden border border-white/10 shadow-2xl">
                   <img src={selectedNews.image} className="w-full h-full object-cover" alt="" />
