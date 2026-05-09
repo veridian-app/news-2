@@ -194,6 +194,17 @@ export const IntelligencePanel = ({
                     </div>
                   </div>
                 </div>
+              {/* Bottom Navigation / Close Button */}
+              <div className="mt-20 pt-12 border-t border-white/10 flex flex-col items-center gap-6 pb-12">
+                <div className="text-[10px] font-black text-white/20 uppercase tracking-[0.4em]">Fin_de_Transmisión</div>
+                <button
+                  onClick={handleClose}
+                  className="group relative px-12 py-5 bg-emerald-500 rounded-full overflow-hidden transition-all active:scale-95 shadow-[0_10px_30px_rgba(16,185,129,0.3)]"
+                >
+                  <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
+                  <span className="relative text-black font-black text-sm tracking-[0.2em] uppercase">Cerrar_Expediente</span>
+                </button>
+                <div className="text-[9px] font-mono text-white/10 uppercase tracking-widest">Veridian_Intelligence_Systems_v2.5</div>
               </div>
             </div>
           </motion.div>
