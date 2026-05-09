@@ -110,6 +110,17 @@
     }
 }
 
+@keyframes marquee {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-25%); }
+}
+
+.animate-marquee {
+    animation: marquee 30s linear infinite;
+    display: flex;
+    width: max-content;
+}
+
 .veridian-news-container .logo {
     font-size: 26px;
     font-weight: 800;

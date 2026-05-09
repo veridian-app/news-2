@@ -475,15 +475,13 @@ export default function VeridianNews() {
                 </div>
               </div>
 
-              <div className="w-full py-1.5 bg-emerald-500/5 border-y border-emerald-500/10 overflow-hidden">
-                <motion.div 
-                  animate={{ x: [0, -1000] }}
-                  transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
-                  className="flex whitespace-nowrap"
-                >
-                  <span className="text-[9px] font-mono text-white/60 font-bold tracking-[0.3em] uppercase">{marqueeText} // SYSTEM_STABLE // NO_THREATS_DETECTED</span>
-                  <span className="text-[9px] font-mono text-white/60 font-bold tracking-[0.3em] uppercase ml-20">{marqueeText} // SYSTEM_STABLE</span>
-                </motion.div>
+              <div className="w-full py-1.5 bg-emerald-500/5 border-y border-emerald-500/10 overflow-hidden relative">
+                <div className="flex animate-marquee whitespace-nowrap">
+                  <span className="text-[9px] font-mono text-white/60 font-bold tracking-[0.3em] uppercase pr-20">{marqueeText} // SYSTEM_STABLE // NO_THREATS_DETECTED</span>
+                  <span className="text-[9px] font-mono text-white/60 font-bold tracking-[0.3em] uppercase pr-20">{marqueeText} // SYSTEM_STABLE // NO_THREATS_DETECTED</span>
+                  <span className="text-[9px] font-mono text-white/60 font-bold tracking-[0.3em] uppercase pr-20">{marqueeText} // SYSTEM_STABLE // NO_THREATS_DETECTED</span>
+                  <span className="text-[9px] font-mono text-white/60 font-bold tracking-[0.3em] uppercase pr-20">{marqueeText} // SYSTEM_STABLE // NO_THREATS_DETECTED</span>
+                </div>
               </div>
 
               <div 

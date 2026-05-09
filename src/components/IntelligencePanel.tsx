@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Brain, ExternalLink, Shield } from 'lucide-react';
 import { NewsItem } from '@/types/news';
 import { useHaptic } from '@/hooks/use-haptic';
+import { mixpanelTrack } from '@/lib/mixpanel';
 
 interface IntelligencePanelProps {
   isOpen: boolean;
@@ -23,6 +24,18 @@ export const IntelligencePanel = ({
   extractKeyPoints
 }: IntelligencePanelProps) => {
   const { trigger: haptic } = useHaptic();
+
+  // Track event when intelligence dossier is opened
+  React.useEffect(() => {
+    if (isOpen && selectedNews) {
+      mixpanelTrack('Intelligence_Opened', {
+        news_id: selectedNews.id,
+        news_title: selectedNews.title,
+        source: selectedNews.source,
+        category: selectedNews.category
+      });
+    }
+  }, [isOpen, selectedNews]);
 
   if (!selectedNews) return null;
 
