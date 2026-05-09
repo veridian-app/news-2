@@ -66,7 +66,7 @@ export const BottomDock = () => {
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 100, opacity: 0 }}
           transition={{ type: "spring", damping: 25, stiffness: 300 }}
-          className="fixed bottom-10 inset-x-0 z-[100] flex justify-center px-4"
+          className="fixed bottom-6 inset-x-0 z-[100] flex justify-center px-4"
         >
           <div className="flex items-center justify-between px-4 py-2 bg-zinc-900/80 backdrop-blur-2xl border border-white/5 rounded-[40px] shadow-[0_20px_50px_rgba(0,0,0,0.5)] min-w-[320px] max-w-[400px] w-full gap-2">
             <DockItem 
