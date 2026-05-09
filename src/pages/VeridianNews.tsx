@@ -71,6 +71,7 @@ export default function VeridianNews() {
   // Inicializar vacío - solo mostrar noticias del Excel
   const [rawNews, setRawNews] = useState<NewsItem[]>([]); // Noticias sin ordenar - solo del Excel
   const feedContainerRef = useRef<HTMLDivElement>(null);
+  const categoryBarRef = useRef<HTMLDivElement>(null);
   const loadingProgressRef = useRef<HTMLDivElement>(null);
   const prefetchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -485,13 +486,30 @@ export default function VeridianNews() {
                 </motion.div>
               </div>
 
-              <div className="px-4 py-2 overflow-x-auto no-scrollbar flex items-center gap-2">
+              <div 
+                ref={categoryBarRef}
+                className="px-4 py-2 overflow-x-auto no-scrollbar flex items-center gap-2 cursor-grab active:cursor-grabbing"
+                onWheel={(e) => {
+                  if (categoryBarRef.current) {
+                    categoryBarRef.current.scrollLeft += e.deltaY;
+                  }
+                }}
+              >
                 {categories.map(cat => (
                   <button
                     key={cat}
                     onClick={() => {
+                      if (activeCategory === cat) {
+                        // Si ya está activa, volver al inicio
+                        feedContainerRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+                        return;
+                      }
                       startTransition(() => {
                         setActiveCategory(cat);
+                        // Resetear scroll al inicio de la nueva categoría
+                        if (feedContainerRef.current) {
+                          feedContainerRef.current.scrollTop = 0;
+                        }
                       });
                     }}
                     className={`px-4 py-1 rounded-full text-[9px] font-black tracking-[0.15em] uppercase transition-all whitespace-nowrap active:scale-95 ${activeCategory === cat ? 'bg-emerald-500 text-black shadow-[0_0_15px_rgba(16,185,129,0.3)]' : 'bg-white/5 text-white/30 hover:text-white'}`}

@@ -187,7 +187,7 @@ export const NewsCard = memo(({ item, isActive, index, onLike, onShare, onReadMo
                     >
                         <div className="absolute left-0 top-1 bottom-1 w-0.5 bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)] group-hover/summary:w-1 transition-all"></div>
                         <p className="text-sm md:text-xl text-zinc-400 md:text-zinc-300 font-mono italic font-light leading-relaxed tracking-wide line-clamp-4 md:line-clamp-none">
-                            \"{item.summary && item.summary.length > 180 ? item.summary.substring(0, 180).trim() + '...' : item.summary}\"
+                            "{item.summary && item.summary.length > 180 ? item.summary.substring(0, 180).trim() + '...' : item.summary}"
                         </p>
                     </motion.div>
  
@@ -215,15 +215,15 @@ export const NewsCard = memo(({ item, isActive, index, onLike, onShare, onReadMo
                         <div className="absolute inset-0 bg-emerald-500/10 z-10 mix-blend-overlay"></div>
                         <div className="absolute inset-0 border border-emerald-500/50 rounded-full z-20 m-1"></div>
                         {item.image ? (
-                            <img src={item.image} alt=\"Intelligence visual\" className=\"w-full h-full object-cover filter grayscale sepia-[0.2] hue-rotate-[140deg]\" />
+                            <img src={item.image} alt="Intelligence visual" className="w-full h-full object-cover filter grayscale sepia-[0.2] hue-rotate-[140deg]" />
                         ) : (
-                            <div className=\"w-full h-full bg-[#0a1510] flex items-center justify-center\">
-                                <Globe className=\"w-10 h-10 text-emerald-500/30\" />
+                            <div className="w-full h-full bg-[#0a1510] flex items-center justify-center">
+                                <Globe className="w-10 h-10 text-emerald-500/30" />
                             </div>
                         )}
-                        <div className=\"absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.4)_100%)] z-10\"></div>
+                        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.4)_100%)] z-10"></div>
                         {/* Radar line effect */}
-                        <div className=\"absolute top-1/2 left-1/2 w-full h-[1px] bg-emerald-500/40 origin-left animate-[spin_4s_linear_infinite] z-20\"></div>
+                        <div className="absolute top-1/2 left-1/2 w-full h-[1px] bg-emerald-500/40 origin-left animate-[spin_4s_linear_infinite] z-20"></div>
                     </motion.div>
 
                     {/* Interactive Footer Row */}
@@ -231,27 +231,27 @@ export const NewsCard = memo(({ item, isActive, index, onLike, onShare, onReadMo
                         initial={{ opacity: 0, y: 20 }}
                         animate={isActive ? { opacity: 1, y: 0 } : {}}
                         transition={{ delay: 0.8, duration: 0.5 }}
-                        className=\"flex items-center gap-2 w-full\"
+                        className="flex items-center gap-2 w-full"
                     >
                         <button
                             onClick={handleReadMoreClick}
-                            className=\"flex-1 h-14 bg-emerald-500 text-black hover:bg-emerald-400 transition-all flex items-center justify-center gap-3 rounded-sm font-black text-[11px] uppercase tracking-[0.2em] pointer-events-auto active:scale-[0.98] shadow-[0_0_20px_rgba(16,185,129,0.4)]\"
+                            className="flex-1 h-14 bg-emerald-500 text-black hover:bg-emerald-400 transition-all flex items-center justify-center gap-3 rounded-sm font-black text-[11px] uppercase tracking-[0.2em] pointer-events-auto active:scale-[0.98] shadow-[0_0_20px_rgba(16,185,129,0.4)]"
                         >
-                            <BookOpen className=\"w-4 h-4\" />
+                            <BookOpen className="w-4 h-4" />
                             ACCESS_INTEL
                         </button>
                         
                         <button
                             onClick={handleShareClick}
-                            className=\"w-14 h-14 bg-black/40 border border-emerald-500/30 flex items-center justify-center text-emerald-500 transition-all rounded-sm pointer-events-auto active:scale-[0.95] hover:bg-emerald-500/10\"
+                            className="w-14 h-14 bg-black/40 border border-emerald-500/30 flex items-center justify-center text-emerald-500 transition-all rounded-sm pointer-events-auto active:scale-[0.95] hover:bg-emerald-500/10"
                         >
-                            <Share2 className=\"w-4 h-4\" />
+                            <Share2 className="w-4 h-4" />
                         </button>
                     </motion.div>
                 </div>
             </div>
 
-            <div className=\"absolute left-0 top-0 bottom-0 w-[1px] bg-gradient-to-b from-transparent via-emerald-500/20 to-transparent pointer-events-none\" />
+            <div className="absolute left-0 top-0 bottom-0 w-[1px] bg-gradient-to-b from-transparent via-emerald-500/20 to-transparent pointer-events-none" />
         </div>
     );
 }, (prevProps, nextProps) => {
