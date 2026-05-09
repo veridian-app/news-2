@@ -53,6 +53,7 @@ export default defineConfig(({ mode }) => ({
       "@landing": path.resolve(__dirname, "./landing"),
       "@news": path.resolve(__dirname, "./src"),
       "@integrations": path.resolve(__dirname, "./integrations"),
+      "mixpanel-browser": "mixpanel-browser/dist/mixpanel.umd.js",
     },
   },
   // Excluir archivos de API de Vercel del procesamiento de Vite
@@ -73,6 +74,9 @@ export default defineConfig(({ mode }) => ({
         "veridian-news": path.resolve(__dirname, 'index.html')
       },
       external: (id) => {
+        // Asegurar que mixpanel-browser NUNCA sea externo
+        if (id.includes('mixpanel-browser')) return false;
+        
         // Excluir archivos de la carpeta api
         if (id.includes('/api/') || id.includes('\\api\\') || id.startsWith('./api/') || id.startsWith('../api/') || id.includes('api/news')) {
           return true;
