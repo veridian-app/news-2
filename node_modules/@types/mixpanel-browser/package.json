@@ -1,0 +1,51 @@
+{
+    "name": "@types/mixpanel-browser",
+    "version": "2.60.0",
+    "description": "TypeScript definitions for mixpanel-browser",
+    "homepage": "https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/mixpanel-browser",
+    "license": "MIT",
+    "contributors": [
+        {
+            "name": "Carlos López",
+            "githubUsername": "karlos1337",
+            "url": "https://github.com/karlos1337"
+        },
+        {
+            "name": "Ricardo Rodrigues",
+            "githubUsername": "RicardoRodrigues",
+            "url": "https://github.com/RicardoRodrigues"
+        },
+        {
+            "name": "Kristian Randall",
+            "githubUsername": "randak",
+            "url": "https://github.com/randak"
+        },
+        {
+            "name": "Dan Wilt",
+            "githubUsername": "dwilt",
+            "url": "https://github.com/dwilt"
+        },
+        {
+            "name": "Justin Helmer",
+            "githubUsername": "justinhelmer",
+            "url": "https://github.com/justinhelmer"
+        },
+        {
+            "name": "Christian Rackerseder",
+            "githubUsername": "screendriver",
+            "url": "https://github.com/screendriver"
+        }
+    ],
+    "main": "",
+    "types": "index.d.ts",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/DefinitelyTyped/DefinitelyTyped.git",
+        "directory": "types/mixpanel-browser"
+    },
+    "scripts": {},
+    "dependencies": {},
+    "peerDependencies": {},
+    "typesPublisherContentHash": "b5b3bbd25f31829f4bc41ea0a0faa35c3a7c11ff96f8cb65792ce44a0609477f",
+    "typeScriptVersion": "5.1"
+}

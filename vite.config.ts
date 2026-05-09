@@ -57,6 +57,7 @@ export default defineConfig(({ mode }) => ({
   },
   // Excluir archivos de API de Vercel del procesamiento de Vite
   optimizeDeps: {
+    include: ['mixpanel-browser'],
     exclude: ['googleapis', '@vercel/node'],
   },
   // Configurar para ignorar archivos de API durante el desarrollo
