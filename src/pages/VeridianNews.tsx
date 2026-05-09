@@ -80,7 +80,12 @@ export default function VeridianNews() {
   const [activeCategory, setActiveCategory] = useState<string>('TODO');
 
   // Búsqueda desde contexto compartido
-  const { searchQuery, setSearchQuery, showSearchModal, closeSearch } = useSearch();
+  const { searchQuery, setSearchQuery, showSearchModal, closeSearch, setAllNews } = useSearch();
+
+  // Sincronizar noticias con el buscador para búsqueda en vivo
+  useEffect(() => {
+    setAllNews(rawNews);
+  }, [rawNews, setAllNews]);
 
   // Debounced search query para evitar colapso de UI
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');

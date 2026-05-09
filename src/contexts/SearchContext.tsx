@@ -1,4 +1,6 @@
-import { createContext, useContext, useState, ReactNode, useCallback } from 'react';
+import { createContext, useContext, useState, ReactNode, useCallback, useMemo } from 'react';
+import { NewsItem } from '@/types/news';
+import { searchNews } from '@/utils/news-utils';
 
 interface SearchContextType {
     searchQuery: string;
@@ -7,6 +9,9 @@ interface SearchContextType {
     openSearch: () => void;
     closeSearch: () => void;
     clearSearch: () => void;
+    allNews: NewsItem[];
+    setAllNews: (news: NewsItem[]) => void;
+    searchResults: NewsItem[];
 }
 
 const SearchContext = createContext<SearchContextType | undefined>(undefined);
@@ -14,6 +19,7 @@ const SearchContext = createContext<SearchContextType | undefined>(undefined);
 export const SearchProvider = ({ children }: { children: ReactNode }) => {
     const [searchQuery, setSearchQuery] = useState('');
     const [showSearchModal, setShowSearchModal] = useState(false);
+    const [allNews, setAllNews] = useState<NewsItem[]>([]);
 
     const openSearch = useCallback(() => setShowSearchModal(true), []);
     const closeSearch = useCallback(() => setShowSearchModal(false), []);
@@ -22,6 +28,11 @@ export const SearchProvider = ({ children }: { children: ReactNode }) => {
         setShowSearchModal(false);
     }, []);
 
+    const searchResults = useMemo(() => {
+        if (!searchQuery.trim() || allNews.length === 0) return [];
+        return searchNews(allNews, searchQuery).slice(0, 15); // Top 15 resultados en vivo
+    }, [allNews, searchQuery]);
+
     return (
         <SearchContext.Provider value={{
             searchQuery,
@@ -29,7 +40,10 @@ export const SearchProvider = ({ children }: { children: ReactNode }) => {
             showSearchModal,
             openSearch,
             closeSearch,
-            clearSearch
+            clearSearch,
+            allNews,
+            setAllNews,
+            searchResults
         }}>
             {children}
         </SearchContext.Provider>
