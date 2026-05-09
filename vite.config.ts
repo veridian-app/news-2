@@ -53,6 +53,7 @@ export default defineConfig(({ mode }) => ({
       "@landing": path.resolve(__dirname, "./landing"),
       "@news": path.resolve(__dirname, "./src"),
       "@integrations": path.resolve(__dirname, "./integrations"),
+      "mixpanel-browser": path.resolve(__dirname, "node_modules/mixpanel-browser/dist/mixpanel.module.js"),
     },
   },
   // Excluir archivos de API de Vercel del procesamiento de Vite
@@ -63,6 +64,10 @@ export default defineConfig(({ mode }) => ({
   // Configurar para ignorar archivos de API durante el desarrollo
   publicDir: 'public',
   build: {
+    commonjsOptions: {
+      include: [/mixpanel-browser/, /node_modules/],
+      transformMixedEsModules: true,
+    },
     rollupOptions: {
       input: {
         main: path.resolve(__dirname, 'index.html'),
