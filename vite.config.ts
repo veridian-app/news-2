@@ -53,7 +53,6 @@ export default defineConfig(({ mode }) => ({
       "@landing": path.resolve(__dirname, "./landing"),
       "@news": path.resolve(__dirname, "./src"),
       "@integrations": path.resolve(__dirname, "./integrations"),
-      "mixpanel-browser": path.resolve(__dirname, "node_modules/mixpanel-browser/dist/mixpanel.module.js"),
     },
   },
   // Excluir archivos de API de Vercel del procesamiento de Vite
