@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 
 const DockItem = ({ icon, path, isActive }: { icon: React.ReactNode, path: string, isActive: boolean }) => (
   <Link to={path} className={cn(
-    "relative flex flex-col items-center justify-center p-2 transition-all duration-300",
+    "relative flex flex-col items-center justify-center p-2 transition-all duration-300 active:scale-90",
     isActive ? "text-emerald-400 scale-110" : "text-white/40 hover:text-white/80"
   )}>
     {icon}
@@ -27,7 +27,7 @@ const SearchButton = ({ isActive }: { isActive: boolean }) => {
     <button
       onClick={openSearch}
       className={cn(
-        "relative flex flex-col items-center justify-center p-2 transition-all duration-300",
+        "relative flex flex-col items-center justify-center p-2 transition-all duration-300 active:scale-90",
         isActive || searchQuery ? "text-emerald-400 scale-110" : "text-white/40 hover:text-white/80"
       )}
     >
@@ -82,7 +82,7 @@ export const BottomDock = () => {
               <Link
                 to="/cafe"
                 className={cn(
-                  "relative flex items-center justify-center w-16 h-16 bg-emerald-500 rounded-full shadow-[0_8px_20px_rgba(16,185,129,0.3)] active:scale-95 transition-all duration-300",
+                  "relative flex items-center justify-center w-16 h-16 bg-emerald-500 rounded-full shadow-[0_8px_20px_rgba(16,185,129,0.3)] active:scale-90 transition-all duration-300",
                   isCafeActive ? "scale-110 shadow-[0_0_25px_rgba(16,185,129,0.5)]" : "hover:bg-emerald-400"
                 )}
               >

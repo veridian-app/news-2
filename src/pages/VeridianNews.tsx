@@ -18,6 +18,7 @@ import { IntelligencePanel } from "../components/IntelligencePanel";
 import { OnboardingOverlay } from "../components/OnboardingOverlay";
 import { normalizeCategory, detectCategory, shuffleNews, recommendNews, extractKeyPoints, searchNews } from "@/utils/news-utils";
 import { mixpanelTrack } from "@/lib/mixpanel";
+import { startTransition } from "react";
 
 
 
@@ -84,11 +85,13 @@ export default function VeridianNews() {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      setDebouncedSearchQuery(searchQuery);
-      // Auto-resetear categoría a TODO si el usuario empieza a buscar
-      if (searchQuery.trim().length > 0) {
-        setActiveCategory('TODO');
-      }
+      startTransition(() => {
+        setDebouncedSearchQuery(searchQuery);
+        // Auto-resetear categoría a TODO si el usuario empieza a buscar
+        if (searchQuery.trim().length > 0) {
+          setActiveCategory('TODO');
+        }
+      });
     }, 300);
     return () => clearTimeout(timer);
   }, [searchQuery]);
@@ -486,8 +489,12 @@ export default function VeridianNews() {
                 {categories.map(cat => (
                   <button
                     key={cat}
-                    onClick={() => setActiveCategory(cat)}
-                    className={`px-4 py-1 rounded-full text-[9px] font-black tracking-[0.15em] uppercase transition-all whitespace-nowrap ${activeCategory === cat ? 'bg-emerald-500 text-black shadow-[0_0_15px_rgba(16,185,129,0.3)]' : 'bg-white/5 text-white/30 hover:text-white'}`}
+                    onClick={() => {
+                      startTransition(() => {
+                        setActiveCategory(cat);
+                      });
+                    }}
+                    className={`px-4 py-1 rounded-full text-[9px] font-black tracking-[0.15em] uppercase transition-all whitespace-nowrap active:scale-95 ${activeCategory === cat ? 'bg-emerald-500 text-black shadow-[0_0_15px_rgba(16,185,129,0.3)]' : 'bg-white/5 text-white/30 hover:text-white'}`}
                   >
                     {cat}
                   </button>
