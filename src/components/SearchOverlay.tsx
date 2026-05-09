@@ -1,9 +1,7 @@
-import { useEffect, useState } from "react";
-import { Search, X, Zap, Clock, TrendingUp } from "lucide-react";
-import { useSearch } from "@/contexts/SearchContext";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { mixpanelTrack } from "@/lib/mixpanel";
+import { createPortal } from "react-dom";
 
 export const SearchOverlay = () => {
   const { searchQuery, setSearchQuery, showSearchModal, closeSearch } = useSearch();
@@ -33,10 +31,10 @@ export const SearchOverlay = () => {
     "Economía Global"
   ];
 
-  return (
+  return createPortal(
     <AnimatePresence>
       {showSearchModal && (
-        <div className="fixed inset-0 z-[9999] flex items-start justify-center pt-[10vh] px-4 sm:px-6">
+        <div className="fixed inset-0 z-[10000] flex items-start justify-center pt-[5dvh] sm:pt-[10vh] px-4 sm:px-6 overflow-hidden">
           {/* Backdrop */}
           <motion.div
             key="search-backdrop"
@@ -44,54 +42,48 @@ export const SearchOverlay = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={closeSearch}
-            className="absolute inset-0 bg-black/90 backdrop-blur-xl"
+            className="absolute inset-0 bg-black/95 backdrop-blur-2xl"
           />
 
           {/* Modal Content */}
           <motion.div
             key="search-content"
-            initial={{ opacity: 0, y: -40, scale: 0.95 }}
+            initial={{ opacity: 0, y: 40, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -40, scale: 0.95 }}
-            transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className="relative w-full max-w-2xl bg-[#0a0f0d] border border-emerald-500/30 rounded-2xl shadow-[0_0_100px_rgba(16,185,129,0.3)] overflow-hidden"
+            exit={{ opacity: 0, y: 40, scale: 0.95 }}
+            transition={{ type: "spring", damping: 30, stiffness: 300 }}
+            className="relative w-full max-w-2xl bg-[#0a0f0d] border border-emerald-500/30 rounded-3xl shadow-[0_0_150px_rgba(16,185,129,0.4)] overflow-hidden flex flex-col max-h-[85vh]"
           >
-            <div className="p-4 sm:p-6">
+            <div className="p-5 sm:p-8 flex flex-col h-full">
               <form onSubmit={handleSubmit} className="relative">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-emerald-500/50" />
+                <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-6 h-6 text-emerald-500" />
                 <input
                   autoFocus
                   type="text"
-                  placeholder="BUSCAR_NOTICIAS_O_EVENTOS..."
+                  placeholder="BUSCAR_INTELIGENCIA..."
                   value={localQuery}
                   onChange={(e) => {
                     setLocalQuery(e.target.value);
-                    // Búsqueda en tiempo real si se desea
                     setSearchQuery(e.target.value);
                   }}
-                  className="w-full bg-white/5 border border-emerald-500/10 rounded-xl py-4 pl-12 pr-12 text-emerald-100 placeholder:text-emerald-500/30 focus:outline-none focus:border-emerald-500/40 focus:ring-1 focus:ring-emerald-500/40 transition-all font-mono text-sm"
+                  className="w-full bg-white/5 border border-emerald-500/20 rounded-2xl py-5 pl-14 pr-14 text-emerald-50 text-base placeholder:text-emerald-500/40 focus:outline-none focus:border-emerald-500/60 focus:ring-1 focus:ring-emerald-500/60 transition-all font-mono"
                 />
-                {localQuery && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setLocalQuery("");
-                      setSearchQuery("");
-                    }}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 p-1 hover:bg-white/5 rounded-md text-emerald-500/50 transition-colors"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
-                )}
+                <button
+                  type="button"
+                  onClick={closeSearch}
+                  className="absolute right-5 top-1/2 -translate-y-1/2 p-2 hover:bg-white/5 rounded-full text-white/40 hover:text-white transition-all"
+                >
+                  <X className="w-5 h-5" />
+                </button>
               </form>
 
-              <div className="mt-8">
-                <div className="flex items-center gap-2 mb-4">
-                  <TrendingUp className="w-3 h-3 text-emerald-500/40" />
-                  <span className="text-[10px] font-black text-emerald-500/40 uppercase tracking-[0.2em]">Tendencias_Tácticas</span>
+              <div className="mt-10 overflow-y-auto no-scrollbar">
+                <div className="flex items-center gap-3 mb-6">
+                  <TrendingUp className="w-4 h-4 text-emerald-500" />
+                  <span className="text-[11px] font-black text-emerald-500 uppercase tracking-[0.3em]">Nodos_Populares</span>
                 </div>
                 
-                <div className="flex flex-wrap gap-2">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                   {suggestions.map((suggestion) => (
                     <button
                       key={suggestion}
@@ -100,7 +92,7 @@ export const SearchOverlay = () => {
                         setSearchQuery(suggestion);
                         closeSearch();
                       }}
-                      className="px-4 py-2 bg-white/5 border border-emerald-500/5 rounded-lg text-xs text-emerald-500/60 hover:text-emerald-400 hover:bg-emerald-500/10 hover:border-emerald-500/20 transition-all font-medium"
+                      className="px-4 py-3 bg-white/5 border border-white/5 rounded-xl text-[11px] text-zinc-400 hover:text-emerald-400 hover:bg-emerald-500/10 hover:border-emerald-500/20 transition-all font-mono text-left"
                     >
                       {suggestion}
                     </button>
@@ -108,19 +100,23 @@ export const SearchOverlay = () => {
                 </div>
               </div>
 
-              <div className="mt-8 pt-6 border-t border-emerald-500/5 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Zap className="w-3 h-3 text-orange-500/50" />
-                  <span className="text-[8px] font-mono text-emerald-500/20 uppercase tracking-widest">Veridian_Search_Core_v2.1</span>
-                </div>
+              <div className="mt-auto pt-8 border-t border-white/5 flex items-center justify-between text-white/20">
                 <div className="flex items-center gap-3">
-                   <span className="text-[8px] font-mono text-emerald-500/20 uppercase">Presiona [Enter] para confirmar</span>
+                  <Zap className="w-4 h-4" />
+                  <span className="text-[10px] font-mono uppercase tracking-widest">Search_Engine_Active</span>
                 </div>
+                <button 
+                  onClick={closeSearch}
+                  className="text-[10px] font-mono uppercase tracking-widest hover:text-emerald-500 transition-colors"
+                >
+                  Cerrar_Terminal [ESC]
+                </button>
               </div>
             </div>
           </motion.div>
         </div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   );
 };
