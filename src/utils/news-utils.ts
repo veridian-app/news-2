@@ -1,6 +1,6 @@
 // News processing utilities for Veridian Systems
 import { NewsItem } from "@/types/news";
-import Fuse from "fuse.js";
+import Fuse from "../lib/vendor/fuse-vendor.mjs";
 
 // Helper to normalize categories (quitar acentos, mayúsculas y mapear sinónimos)
 export const normalizeCategory = (cat: string): string => {

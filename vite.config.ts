@@ -61,6 +61,7 @@ export default defineConfig(({ mode }) => ({
   publicDir: 'public',
   build: {
     commonjsOptions: {
+      include: [/node_modules/],
       transformMixedEsModules: true,
     },
     rollupOptions: {
