@@ -241,46 +241,66 @@ export default function VeridianNews() {
     };
   }, [displayNews]);
 
-  // Background Prefetching of AI Analysis
+  // Background P  // Tactical Prefetching: Pre-analyzes news before the user opens the panel
   useEffect(() => {
     if (!currentVisibleNews || displayNews.length === 0) return;
     
-    const prefetchActiveAndNext = async () => {
+    const prefetchIntelligent = async () => {
       if (isPrefetchingRef.current) return;
       
       const currentIndex = displayNews.findIndex(n => n.id === currentVisibleNews.id);
       if (currentIndex === -1) return;
 
-      // Prefetch ONLY the next news item to avoid rate limits
-      const item = displayNews[currentIndex + 1];
-      if (!item || analysisCache[item.id]) return;
+      // Queue of items to analyze: [Current, Next, Next+1]
+      const itemsToPrefetch = [
+        displayNews[currentIndex],
+        displayNews[currentIndex + 1],
+        displayNews[currentIndex + 2]
+      ].filter(item => item && !analysisCache[item.id] && !item.analysis);
+
+      if (itemsToPrefetch.length === 0) return;
 
       isPrefetchingRef.current = true;
-      try {
-        const { analyzeNews } = await import("@/services/gemini");
-        const cleanSummary = (item.summary || '').replace(/\.\.\.$/, '').trim();
-        const cleanAnalysis = (item.analysis || '').replace(/\.\.\.$/, '').trim();
-        const textToAnalyze = (item.content && item.content !== 'Contenido restringido.') 
-          ? item.content 
-          : `CONTEXTO_TÁCTICO: ${cleanAnalysis} | RESUMEN_ADICIONAL: ${cleanSummary}`;
+      
+      for (const item of itemsToPrefetch) {
+        try {
+          // Double check cache inside loop
+          if (analysisCache[item.id]) continue;
+
+          console.log(`[TACTICAL_PREFETCH] Analyzing Intelligence for: ${item.title.substring(0, 30)}...`);
           
-        const analysis = await analyzeNews(item.title, textToAnalyze);
-        setAnalysisCache(prev => ({ ...prev, [item.id]: analysis }));
-      } catch (err) {
-        console.warn("Prefetch warning:", err);
-      } finally {
-        isPrefetchingRef.current = false;
+          const { analyzeNews } = await import("@/services/gemini");
+          const cleanSummary = (item.summary || '').replace(/\.\.\.$/, '').trim();
+          const cleanAnalysis = (item.analysis || '').replace(/\.\.\.$/, '').trim();
+          const textToAnalyze = (item.content && item.content !== 'Contenido restringido.') 
+            ? item.content 
+            : `CONTEXTO_TÁCTICO: ${cleanAnalysis} | RESUMEN_ADICIONAL: ${cleanSummary}`;
+            
+          const analysis = await analyzeNews(item.title, textToAnalyze);
+          
+          setAnalysisCache(prev => ({ 
+            ...prev, 
+            [item.id]: analysis 
+          }));
+          
+          // Small delay between prefetch requests to be polite to the API
+          await new Promise(r => setTimeout(r, 500));
+        } catch (err) {
+          console.warn("Prefetch warning:", err);
+        }
       }
+      
+      isPrefetchingRef.current = false;
     };
     
     if (prefetchTimeoutRef.current) clearTimeout(prefetchTimeoutRef.current);
-    // Esperar 1 segundo antes de empezar a analizar (por si el usuario hace scroll rápido)
-    prefetchTimeoutRef.current = setTimeout(prefetchActiveAndNext, 1000);
+    // Give the user 800ms of "stability" before prefetching (to avoid analyzing while fast-scrolling)
+    prefetchTimeoutRef.current = setTimeout(prefetchIntelligent, 800);
 
     return () => {
       if (prefetchTimeoutRef.current) clearTimeout(prefetchTimeoutRef.current);
     };
-  }, [currentVisibleNews, displayNews]);
+  }, [currentVisibleNews?.id, displayNews]);
 
   const openFullContent = async (item: NewsItem) => {
     mixpanelTrack('article_read', {
