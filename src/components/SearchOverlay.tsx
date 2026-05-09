@@ -3,15 +3,19 @@ import { Search, X, Zap, Clock, TrendingUp } from "lucide-react";
 import { useSearch } from "@/contexts/SearchContext";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { mixpanelTrack } from "@/lib/mixpanel";
 
 export const SearchOverlay = () => {
   const { searchQuery, setSearchQuery, showSearchModal, closeSearch } = useSearch();
   const [localQuery, setLocalQuery] = useState(searchQuery);
 
-  // Sincronizar local con global
+  // Sincronizar local con global y trackear
   useEffect(() => {
     setLocalQuery(searchQuery);
-  }, [searchQuery]);
+    if (showSearchModal) {
+      mixpanelTrack('Search_Modal_Opened');
+    }
+  }, [searchQuery, showSearchModal]);
 
   // Manejar el submit (tecla Enter)
   const handleSubmit = (e: React.FormEvent) => {
@@ -32,22 +36,25 @@ export const SearchOverlay = () => {
   return (
     <AnimatePresence>
       {showSearchModal && (
-        <div className="fixed inset-0 z-[200] flex items-start justify-center pt-[10vh] px-4 sm:px-6">
+        <div className="fixed inset-0 z-[9999] flex items-start justify-center pt-[10vh] px-4 sm:px-6">
           {/* Backdrop */}
           <motion.div
+            key="search-backdrop"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={closeSearch}
-            className="absolute inset-0 bg-[#020504]/80 backdrop-blur-md"
+            className="absolute inset-0 bg-black/90 backdrop-blur-xl"
           />
 
           {/* Modal Content */}
           <motion.div
-            initial={{ opacity: 0, y: -20, scale: 0.95 }}
+            key="search-content"
+            initial={{ opacity: 0, y: -40, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -20, scale: 0.95 }}
-            className="relative w-full max-w-2xl bg-[#0a0f0d] border border-emerald-500/20 rounded-2xl shadow-[0_0_50px_rgba(16,185,129,0.1)] overflow-hidden"
+            exit={{ opacity: 0, y: -40, scale: 0.95 }}
+            transition={{ type: "spring", damping: 25, stiffness: 300 }}
+            className="relative w-full max-w-2xl bg-[#0a0f0d] border border-emerald-500/30 rounded-2xl shadow-[0_0_100px_rgba(16,185,129,0.3)] overflow-hidden"
           >
             <div className="p-4 sm:p-6">
               <form onSubmit={handleSubmit} className="relative">
