@@ -91,7 +91,7 @@ export const IntelligencePanel = ({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
           >
-            <div className="max-w-4xl mx-auto p-6 md:p-12 space-y-12">
+            <div className="max-w-3xl mx-auto px-6 py-12 md:px-12 space-y-12">
               {selectedNews.image && (
                 <div className="w-full aspect-video rounded-[40px] overflow-hidden border border-white/10 shadow-2xl">
                   <img src={selectedNews.image} className="w-full h-full object-cover" alt="" />
@@ -137,7 +137,7 @@ export const IntelligencePanel = ({
                             if (trimmed.includes('### Fuentes') || trimmed.toLowerCase() === 'fuentes consultadas' || trimmed === 'Fuentes:') {
                               return <h4 key={i} className="text-sm font-mono text-emerald-500/80 mt-12 mb-4 uppercase tracking-wider border-b border-white/5 pb-2">Fuentes Consultadas</h4>;
                             }
-                            return <p key={i} className="text-zinc-300/90">{trimmed}</p>;
+                             return <p key={i} className="text-zinc-300/90 break-words overflow-hidden">{trimmed}</p>;
                           })
                       ) : (
                         <p className="text-zinc-500 italic font-mono text-sm">No se ha podido recuperar el cuerpo completo de esta noticia. Solo se dispone del informe de inteligencia.</p>
@@ -163,23 +163,23 @@ export const IntelligencePanel = ({
                         </div>
                       ) : aiAnalysis ? (
                         <>
-                          <div className="space-y-3">
-                            <div className="text-[9px] font-black text-emerald-500/60 uppercase tracking-widest">¿Qué significa?</div>
-                            <p className="text-[13px] text-zinc-300 leading-relaxed italic border-l border-emerald-500/30 pl-4">
-                              {aiAnalysis.meaning}
-                            </p>
-                          </div>
-                          <div className="space-y-4">
-                            <div className="text-[9px] font-black text-orange-500/60 uppercase tracking-widest flex items-center gap-2">¿Cómo afecta?</div>
-                            <div className="space-y-4 border-l border-orange-500/20 pl-4">
-                              {typeof aiAnalysis.impact === 'string' && aiAnalysis.impact.split(/[-•]/).map(p => p.trim()).filter(Boolean).map((point, idx) => (
-                                <div key={idx} className="flex gap-3 items-start">
-                                  <div className="mt-1.5 w-1.5 h-1.5 rotate-45 bg-orange-500/30 shrink-0" />
-                                  <span className="text-[13px] text-zinc-300 leading-tight font-light">{point}</span>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
+                           <div className="space-y-4">
+                             <div className="text-[10px] font-black text-emerald-500/80 uppercase tracking-widest border-b border-emerald-500/10 pb-2">¿Qué significa?</div>
+                             <p className="text-[14px] text-zinc-300 leading-relaxed italic border-l-2 border-emerald-500/30 pl-4 py-1">
+                               {aiAnalysis.meaning}
+                             </p>
+                           </div>
+                           <div className="space-y-5 pt-2">
+                             <div className="text-[10px] font-black text-orange-500/80 uppercase tracking-widest border-b border-orange-500/10 pb-2 flex items-center gap-2">Impacto_Directo</div>
+                             <div className="space-y-4 border-l-2 border-orange-500/20 pl-4 py-1">
+                               {typeof aiAnalysis.impact === 'string' && aiAnalysis.impact.split(/[-•]/).map(p => p.trim()).filter(Boolean).map((point, idx) => (
+                                 <div key={idx} className="flex gap-3 items-start">
+                                   <div className="mt-2 w-1.5 h-1.5 rotate-45 bg-orange-500/40 shrink-0" />
+                                   <span className="text-[14px] text-zinc-300 leading-snug font-light">{point}</span>
+                                 </div>
+                               ))}
+                             </div>
+                           </div>
                         </>
                       ) : (
                         <div className="space-y-4">
