@@ -29,6 +29,7 @@ export interface NewsItem {
 interface NewsCardProps {
     item: NewsItem;
     isActive: boolean;
+    isLiked: boolean;
     index: number;
     onLike: () => void;
     onShare: () => void;
@@ -36,7 +37,7 @@ interface NewsCardProps {
     category?: string;
 }
 
-export const NewsCard = memo(({ item, isActive, index, onLike, onShare, onReadMore, category }: NewsCardProps) => {
+export const NewsCard = memo(({ item, isActive, isLiked, index, onLike, onShare, onReadMore, category }: NewsCardProps) => {
     // Logic for double tap
     const lastTap = useRef<number>(0);
     const [showDoubleTapHeart, setShowDoubleTapHeart] = useState(false);
@@ -259,8 +260,8 @@ export const NewsCard = memo(({ item, isActive, index, onLike, onShare, onReadMo
 }, (prevProps, nextProps) => {
     return (
         prevProps.isActive === nextProps.isActive &&
+        prevProps.isLiked === nextProps.isLiked &&
         prevProps.item.id === nextProps.item.id &&
-        prevProps.item.isLiked === nextProps.item.isLiked &&
         prevProps.category === nextProps.category
     );
 });

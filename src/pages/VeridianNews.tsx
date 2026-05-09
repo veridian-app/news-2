@@ -228,7 +228,7 @@ export default function VeridianNews() {
       },
       {
         root: feedContainerRef.current,
-        threshold: 0.6,
+        threshold: 0.5,
       }
     );
 
@@ -563,7 +563,8 @@ export default function VeridianNews() {
                       className="news-card h-[100dvh] w-full snap-start snap-always shrink-0 overflow-hidden relative"
                     >
                       <NewsCard
-                        item={{ ...item, isLiked: likedNewsIds.has(item.id) }}
+                        item={item}
+                        isLiked={likedNewsIds.has(item.id)}
                         isActive={currentVisibleNews?.id === item.id}
                         index={index}
                         onLike={() => toggleLike(item)}

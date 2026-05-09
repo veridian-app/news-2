@@ -225,11 +225,15 @@
     flex-direction: column;
     scroll-snap-align: start;
     scroll-snap-stop: always;
-    transform: translateZ(0);
+    transform: translate3d(0, 0, 0);
     will-change: transform;
     contain: layout size;
     user-select: none;
     -webkit-user-select: none;
+    
+    /* Extreme optimization: skip rendering if far off-screen */
+    content-visibility: auto;
+    contain-intrinsic-size: 100% 100dvh;
 }
 
 /* Card Colapsada - Formato Tarjeta Compacta */
