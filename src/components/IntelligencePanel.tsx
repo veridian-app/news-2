@@ -3,6 +3,7 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Brain, ExternalLink, Shield } from 'lucide-react';
 import { NewsItem } from '@/types/news';
+import { useHaptic } from '@/hooks/use-haptic';
 
 interface IntelligencePanelProps {
   isOpen: boolean;
@@ -21,17 +22,37 @@ export const IntelligencePanel = ({
   isAiLoading,
   extractKeyPoints
 }: IntelligencePanelProps) => {
+  const { trigger: haptic } = useHaptic();
+
   if (!selectedNews) return null;
+
+  const handleClose = () => {
+    haptic('light');
+    onClose();
+  };
 
   return (
     <AnimatePresence>
       {isOpen && (
         <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 z-[1000] bg-[#020504] flex flex-col"
+          initial={{ opacity: 0, y: '100%' }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: '100%' }}
+          transition={{ type: "spring", damping: 25, stiffness: 200 }}
+          drag="y"
+          dragConstraints={{ top: 0 }}
+          dragElastic={0.2}
+          onDragEnd={(_, info) => {
+            if (info.offset.y > 150) {
+              handleClose();
+            }
+          }}
+          className="fixed inset-0 z-[1000] bg-[#020504] flex flex-col touch-none"
         >
+          {/* Drag Handle for Mobile */}
+          <div className="w-full flex justify-center pt-2 pb-1 md:hidden">
+            <div className="w-12 h-1.5 bg-white/10 rounded-full" />
+          </div>
           {/* Header Táctico del Modal */}
           <div className="flex items-center justify-between px-6 py-4 border-b border-white/5 bg-black/40 backdrop-blur-md sticky top-0 z-20">
             <div className="flex items-center gap-3">
@@ -44,17 +65,18 @@ export const IntelligencePanel = ({
               </div>
             </div>
             <button 
-              onClick={onClose}
-              className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white/60 hover:text-white hover:bg-white/10 transition-all"
+              onClick={handleClose}
+              className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 text-white/60 hover:text-white hover:bg-white/10 transition-all active:scale-95"
             >
-              <X className="w-5 h-5" />
+              <span className="text-[10px] font-black tracking-widest uppercase">VOLVER</span>
+              <X className="w-4 h-4" />
             </button>
           </div>
 
           <motion.div 
-            className="flex-1 overflow-y-auto no-scrollbar pb-24"
-            initial={{ y: 20 }}
-            animate={{ y: 0 }}
+            className="flex-1 overflow-y-auto no-scrollbar pb-24 touch-pan-y"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
           >
             <div className="max-w-4xl mx-auto p-6 md:p-12 space-y-12">
               {selectedNews.image && (
