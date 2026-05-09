@@ -325,6 +325,7 @@ export default function VeridianNews() {
         const parsedCache = JSON.parse(cachedNews);
         if (Array.isArray(parsedCache) && parsedCache.length > 0) {
           setRawNews(parsedCache);
+          setIsLoading(false);
         }
       } catch (e) { console.error(e); }
     } else {
@@ -333,14 +334,16 @@ export default function VeridianNews() {
 
     try {
       if (isSupabaseConfigured()) {
-        const { data, error } = await (supabase as any)
+        const { data, error: sbError } = await (supabase as any)
           .from('daily_news')
           .select('*')
           .order('created_at', { ascending: false })
           .limit(1000);
 
-        if (error) {
-          console.error("❌ Error fetching from Supabase:", error);
+        if (sbError) {
+          console.error("❌ Error fetching from Supabase:", sbError);
+          setError(`ERROR_DE_CONEXIÓN: ${sbError.message}`);
+          setIsOffline(true);
         }
 
         if (data && data.length > 0) {
@@ -358,18 +361,22 @@ export default function VeridianNews() {
             analysis: item.analysis
           }));
           setRawNews(processed);
+          setError(null);
+          setIsOffline(false);
           localStorage.setItem('veridian_news_cache', JSON.stringify(processed));
-          return;
-        } else {
-          console.warn("⚠️ Supabase returned empty data or null.");
+        } else if (!cachedNews) {
+          setError("SISTEMA_VACÍO: No hay inteligencia disponible en este nodo.");
         }
       } else {
         console.warn("⚠️ Supabase is not configured.");
+        setError("SISTEMA_DESCONECTADO: Variables de entorno no detectadas.");
       }
-    } catch (error) { 
+    } catch (error: any) { 
       console.error("❌ Unexpected error in loadNews:", error); 
+      setError(`FALLO_CRÍTICO: ${error.message || 'Error desconocido'}`);
+    } finally {
+      setIsLoading(false);
     }
-    setRawNews([]);
   };
 
   const loadUserLikes = async () => {
@@ -528,7 +535,22 @@ export default function VeridianNews() {
               >
                 {displayNews.length === 0 ? (
                   <div className="h-full flex flex-col items-center justify-center gap-4 p-8">
-                    {debouncedSearchQuery ? (
+                    {error ? (
+                      <>
+                        <div className="w-16 h-16 rounded-full border-2 border-red-500/20 flex items-center justify-center mb-2">
+                          <X className="w-8 h-8 text-red-500/50" />
+                        </div>
+                        <p className="text-[10px] font-black uppercase tracking-[0.4em] text-red-500/60 text-center max-w-xs leading-relaxed">
+                          {error}
+                        </p>
+                        <button 
+                          onClick={() => window.location.reload()}
+                          className="mt-4 px-6 py-2 border border-emerald-500/20 rounded-full text-[9px] font-black uppercase tracking-widest text-emerald-500/60 hover:bg-emerald-500/10 transition-all"
+                        >
+                          REINTENTAR_CONEXIÓN
+                        </button>
+                      </>
+                    ) : debouncedSearchQuery ? (
                       <>
                         <Search className="w-12 h-12 text-white/10" />
                         <p className="text-[10px] font-black uppercase tracking-[0.4em] text-white/20 text-center">
