@@ -3,3 +3,7 @@
 .env.vercel
 .DS_Store
 dist
+node_modules
+.vite
+.vercel
+*.log
