@@ -225,7 +225,7 @@ const VeridianLanding = () => {
                     <motion.h2 
                       className="text-2xl md:text-4xl font-black uppercase tracking-tight italic leading-none text-white"
                     >
-                      {authMode === 'login' ? 'ENTRAR' : 'REGISTRARSE'}
+                      {authMode === 'login' ? 'ENTRAR' : 'DARSE DE ALTA'}
                     </motion.h2>
                     <div className="flex items-center justify-center gap-2">
                       <div className={`w-1 h-1 md:w-1.5 md:h-1.5 ${authMode === 'login' ? 'bg-emerald-500' : 'bg-cyan-500'} rounded-full animate-pulse`} />
@@ -249,7 +249,7 @@ const VeridianLanding = () => {
                           <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.66l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
                       </svg>
                       <span className="text-black font-black text-[10px] md:text-[12px] uppercase tracking-[0.2em]">
-                        {authMode === 'login' ? 'Entrar con Google' : 'Registrarse con Google'}
+                        {authMode === 'login' ? 'Entrar con Google' : 'Darse de alta con Google'}
                       </span>
                     </motion.button>
 
@@ -319,7 +319,7 @@ const VeridianLanding = () => {
                           className={`w-full h-11 md:h-16 rounded-xl md:rounded-2xl text-[10px] md:text-[12px] font-black uppercase tracking-[0.4em] transition-all relative overflow-hidden ${authMode === 'login' ? 'bg-emerald-500 hover:bg-emerald-400' : 'bg-cyan-500 hover:bg-cyan-400'} text-black shadow-[0_15px_30px_rgba(16,185,129,0.2)]`}
                         >
                           <span className="relative z-10 flex items-center justify-center gap-2 md:gap-3">
-                            {isLoading ? (authMode === 'login' ? 'Entrando...' : 'Registrando...') : (authMode === 'login' ? 'ENTRAR' : 'REGISTRARSE')} 
+                            {isLoading ? (authMode === 'login' ? 'Entrando...' : 'Procesando alta...') : (authMode === 'login' ? 'ENTRAR' : 'DARSE DE ALTA')} 
                             {!isLoading && <ArrowRight className="w-4 h-4 md:w-5 md:h-5" />}
                           </span>
                         </Button>
@@ -364,9 +364,10 @@ const VeridianLanding = () => {
                         : 'Confirma tu email para activar tu cuenta Veridian.'}
                     </p>
                     {authMode === 'signup' && (
-                      <div className="mt-4 px-4 py-2 bg-emerald-500/5 border border-emerald-500/10 rounded-lg">
-                        <p className="text-[8px] text-emerald-400 uppercase tracking-widest font-black">
-                          Pulsa en el enlace del correo para completar el reclutamiento.
+                      <div className="mt-4 px-4 py-4 bg-emerald-500/5 border border-emerald-500/10 rounded-xl">
+                        <p className="text-[9px] text-emerald-400 uppercase tracking-widest font-black leading-relaxed">
+                          PULSA EL ENLACE DEL CORREO PARA COMPLETAR EL ALTA.<br/>
+                          <span className="text-white/40 text-[7px] mt-2 block">SI NO APARECE EN TU BANDEJA, REVISA TU CARPETA DE SPAM.</span>
                         </p>
                       </div>
                     )}

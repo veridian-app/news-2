@@ -177,7 +177,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                                                         <Loader2 className="w-5 h-5 animate-spin" />
                                                     ) : (
                                                         <>
-                                                            {mode === 'signin' ? 'Entrar' : 'Registrarse'} <ArrowRight className="w-5 h-5" />
+                                                            {mode === 'signin' ? 'Entrar' : 'Darse de alta'} <ArrowRight className="w-5 h-5" />
                                                         </>
                                                     )}
                                                 </Button>
@@ -220,15 +220,14 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                                                 : 'Hemos enviado un enlace mágico a'}<br />
                                             <span className="text-white font-medium">{email}</span>
                                         </p>
-                                        {mode === 'signup' && (
-                                            <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-3 mb-6">
-                                                <p className="text-emerald-400 text-[10px] uppercase tracking-widest font-bold">
-                                                    Pulsa en el enlace del correo para activar tu cuenta y empezar.
-                                                </p>
-                                            </div>
-                                        )}
+                                        <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-4 mb-6">
+                                            <p className="text-emerald-400 text-[11px] uppercase tracking-widest font-bold leading-relaxed">
+                                                Pulsa en el enlace del correo para activar tu cuenta.<br/>
+                                                <span className="text-white/60 text-[9px] mt-2 block italic">Si no lo ves, revisa tu carpeta de SPAM.</span>
+                                            </p>
+                                        </div>
                                         <p className="text-white/40 text-xs">
-                                            ¿No lo ves? Revisa tu carpeta de spam
+                                            ¿Sigues sin recibirlo? Inténtalo de nuevo en unos minutos.
                                         </p>
                                     </div>
                                 )}
