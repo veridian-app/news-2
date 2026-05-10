@@ -199,7 +199,7 @@ export const NewsCard = memo(({ item, isActive, isLiked, index, onLike, onShare,
                         className="flex items-center gap-3 mt-1"
                     >
                         <span className="text-[9px] md:text-[11px] font-black tracking-[0.25em] text-emerald-500/90 uppercase truncate">
-                            INTEL_SOURCE <span className="text-emerald-500/20 mx-1">//</span> {cleanSource}
+                            Fuente <span className="text-emerald-500/20 mx-1">//</span> {cleanSource}
                         </span>
                     </motion.div>
                 </div>
@@ -242,7 +242,7 @@ export const NewsCard = memo(({ item, isActive, isLiked, index, onLike, onShare,
                             className="flex-1 h-14 bg-emerald-500 text-black active:bg-emerald-400 transition-colors flex items-center justify-center gap-3 rounded-sm font-black text-[11px] uppercase tracking-[0.25em] pointer-events-auto shadow-[0_8px_20px_rgba(16,185,129,0.2)]"
                         >
                             <BookOpen className="w-4 h-4" />
-                            VER_INTELIGENCIA
+                            LEER NOTICIA
                         </motion.button>
                         
                         <motion.button

@@ -53,8 +53,8 @@ const Profile = () => {
                 <Brain className="w-5 h-5 text-emerald-400" />
               </div>
               <div className="flex-1">
-                <h3 className="font-bold uppercase tracking-wider text-sm">Profundidad de Inteligencia</h3>
-                <p className="text-[10px] text-white/40 uppercase tracking-widest mt-1">Nivel de análisis táctico: {analysisLevel}</p>
+                <h3 className="font-bold uppercase tracking-wider text-sm">Nivel de detalle</h3>
+                <p className="text-[10px] text-white/40 uppercase tracking-widest mt-1">Nivel de análisis: {analysisLevel}</p>
               </div>
             </div>
 
@@ -68,8 +68,8 @@ const Profile = () => {
                 className="w-full h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer accent-emerald-500"
               />
               <div className="flex justify-between text-[8px] font-black text-white/20 uppercase tracking-widest">
-                <span>Resumen_Ejecutivo</span>
-                <span>Análisis_Máximo</span>
+                <span>Resumen rápido</span>
+                <span>Análisis profundo</span>
               </div>
             </div>
             

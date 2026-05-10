@@ -71,7 +71,7 @@ export const SearchOverlay = () => {
                 <input
                   autoFocus
                   type="text"
-                  placeholder="BUSCAR_INTELIGENCIA..."
+                  placeholder="Buscar noticia..."
                   value={localQuery}
                   onChange={(e) => {
                     setLocalQuery(e.target.value);
@@ -99,9 +99,9 @@ export const SearchOverlay = () => {
                         >
                           <Zap className="w-4 h-4 text-emerald-500" />
                         </motion.div>
-                        <span className="text-[11px] font-black text-emerald-500 uppercase tracking-[0.3em]">Resultados_En_Vivo</span>
+                        <span className="text-[11px] font-black text-emerald-500 uppercase tracking-[0.3em]">Resultados en vivo</span>
                       </div>
-                      <span className="text-[9px] font-mono text-emerald-500/40">{searchResults.length} NODOS_ENCONTRADOS</span>
+                      <span className="text-[9px] font-mono text-emerald-500/40">{searchResults.length} RESULTADOS</span>
                     </div>
 
                     <div className="space-y-2">
@@ -137,7 +137,7 @@ export const SearchOverlay = () => {
                           <div className="w-16 h-16 rounded-full border border-emerald-500/10 flex items-center justify-center mb-4">
                             <X className="w-8 h-8 text-emerald-500/20" />
                           </div>
-                          <p className="text-[11px] font-black text-emerald-500/40 uppercase tracking-[0.4em]">Cero_Coincidencias_Tacticas</p>
+                          <p className="text-[11px] font-black text-emerald-500/40 uppercase tracking-[0.4em]">Sin resultados</p>
                         </div>
                       )}
                     </div>
@@ -146,7 +146,7 @@ export const SearchOverlay = () => {
                   <>
                     <div className="flex items-center gap-3 mb-6">
                       <TrendingUp className="w-4 h-4 text-emerald-500" />
-                      <span className="text-[11px] font-black text-emerald-500 uppercase tracking-[0.3em]">Nodos_Populares</span>
+                      <span className="text-[11px] font-black text-emerald-500 uppercase tracking-[0.3em]">Tendencias</span>
                     </div>
                     
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
@@ -170,13 +170,13 @@ export const SearchOverlay = () => {
               <div className="mt-auto pt-6 border-t border-white/5 shrink-0 flex items-center justify-between text-white/20">
                 <div className="flex items-center gap-3">
                   <Zap className="w-4 h-4" />
-                  <span className="text-[10px] font-mono uppercase tracking-widest">Search_Engine_Active</span>
+                  <span className="text-[10px] font-mono uppercase tracking-widest">Buscador activo</span>
                 </div>
                 <button 
                   onClick={closeSearch}
                   className="text-[10px] font-mono uppercase tracking-widest hover:text-emerald-500 transition-colors"
                 >
-                  Cerrar_Terminal [ESC]
+                  Cerrar [ESC]
                 </button>
               </div>
             </div>

@@ -73,7 +73,7 @@ export const IntelligencePanel = ({
                 <Shield className="w-4 h-4 text-emerald-500" />
               </div>
               <div>
-                <div className="text-[10px] font-black text-emerald-500 tracking-[0.2em] uppercase">Expediente_Abierto</div>
+                <div className="text-[10px] font-black text-emerald-500 tracking-[0.2em] uppercase">Noticia abierta</div>
                 <div className="text-[8px] font-mono text-white/30 uppercase tracking-widest">ID: {selectedNews.id.substring(0, 8)} // {selectedNews.source}</div>
               </div>
             </div>
@@ -98,7 +98,7 @@ export const IntelligencePanel = ({
                 className="group flex items-center gap-3 px-6 py-3 bg-white/5 border border-white/10 rounded-full text-white/40 hover:text-emerald-400 hover:bg-emerald-500/10 hover:border-emerald-500/20 transition-all active:scale-95"
               >
                 <X className="w-4 h-4" />
-                <span className="text-[10px] font-black uppercase tracking-[0.2em]">Cerrar_Expediente</span>
+                <span className="text-[10px] font-black uppercase tracking-[0.2em]">Cerrar noticia</span>
               </button>
 
               {selectedNews.image && (
@@ -121,7 +121,7 @@ export const IntelligencePanel = ({
                       </div>
                       <div className="flex items-center gap-2 mb-6">
                         <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-500">Informe de Inteligencia // Supabase_Link</span>
+                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-500">Resumen de la noticia</span>
                       </div>
                       <div className="text-xl md:text-2xl text-emerald-100/90 font-mono italic leading-relaxed">
                         "{selectedNews.analysis}"
@@ -132,7 +132,7 @@ export const IntelligencePanel = ({
                   <div className="space-y-8 mt-12">
                     <div className="flex items-center gap-3 border-b border-white/10 pb-4">
                       <div className="w-2 h-2 rounded-full bg-emerald-500/50"></div>
-                      <h3 className="text-[12px] font-black uppercase tracking-[0.3em] text-white/50">Contexto_Original</h3>
+                      <h3 className="text-[12px] font-black uppercase tracking-[0.3em] text-white/50">Contenido de la noticia</h3>
                     </div>
                     
                     <div className="text-lg md:text-xl text-zinc-300 font-sans font-light leading-relaxed space-y-6">
@@ -160,7 +160,7 @@ export const IntelligencePanel = ({
                     <div className="flex items-center justify-between text-emerald-400">
                       <div className="flex items-center gap-3">
                         <Brain className={`w-5 h-5 ${isAiLoading ? 'animate-pulse' : ''}`} />
-                        <span className="text-[12px] font-black uppercase tracking-[0.2em]">Analysis_Veridian</span>
+                        <span className="text-[12px] font-black uppercase tracking-[0.2em]">Análisis de Veridian</span>
                       </div>
                     </div>
 
@@ -206,15 +206,15 @@ export const IntelligencePanel = ({
               </div>
               {/* Bottom Navigation / Close Button */}
               <div className="mt-20 pt-12 border-t border-white/10 flex flex-col items-center gap-6 pb-12">
-                <div className="text-[10px] font-black text-white/20 uppercase tracking-[0.4em]">Fin_de_Transmisión</div>
+                <div className="text-[10px] font-black text-white/20 uppercase tracking-[0.4em]">Fin de la noticia</div>
                 <button
                   onClick={handleClose}
                   className="group relative px-12 py-5 bg-emerald-500 rounded-full overflow-hidden transition-all active:scale-95 shadow-[0_10px_30px_rgba(16,185,129,0.3)]"
                 >
                   <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
-                  <span className="relative text-black font-black text-sm tracking-[0.2em] uppercase">Cerrar_Expediente</span>
+                  <span className="relative text-black font-black text-sm tracking-[0.2em] uppercase">Cerrar noticia</span>
                 </button>
-                <div className="text-[9px] font-mono text-white/10 uppercase tracking-widest">Veridian_Intelligence_Systems_v2.5</div>
+                <div className="text-[9px] font-mono text-white/10 uppercase tracking-widest">Veridian Intelligence Systems v2.5</div>
               </div>
             </div>
           </motion.div>

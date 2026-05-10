@@ -55,7 +55,7 @@ export default function VeridianNews() {
 
   const [isLoading, setIsLoading] = useState(true);
   const [loadingProgress, setLoadingProgress] = useState(0);
-  const [loadingText, setLoadingText] = useState('INICIALIZANDO_TERMINAL...');
+  const [loadingText, setLoadingText] = useState('Cargando noticias...');
   const [error, setError] = useState<string | null>(null);
   const [tableExists, setTableExists] = useState<boolean | null>(null);
   const [selectedNews, setSelectedNews] = useState<NewsItem | null>(null);
@@ -274,7 +274,7 @@ export default function VeridianNews() {
           const cleanAnalysis = (item.analysis || '').replace(/\.\.\.$/, '').trim();
           const textToAnalyze = (item.content && item.content !== 'Contenido restringido.') 
             ? item.content 
-            : `CONTEXTO_TÁCTICO: ${cleanAnalysis} | RESUMEN_ADICIONAL: ${cleanSummary}`;
+            : `Contexto: ${cleanAnalysis} | Resumen: ${cleanSummary}`;
             
           const analysis = await analyzeNews(item.title, textToAnalyze);
           
@@ -362,7 +362,7 @@ export default function VeridianNews() {
 
         if (sbError) {
           console.error("❌ Error fetching from Supabase:", sbError);
-          setError(`ERROR_DE_CONEXIÓN: ${sbError.message}`);
+          setError(`Error de conexión: ${sbError.message}`);
           setIsOffline(true);
         }
 
@@ -385,7 +385,7 @@ export default function VeridianNews() {
           setIsOffline(false);
           localStorage.setItem('veridian_news_cache', JSON.stringify(processed));
         } else if (!cachedNews) {
-          setError("SISTEMA_VACÍO: No hay inteligencia disponible en este nodo.");
+          setError("No hay noticias disponibles en este momento.");
         }
       } else {
         console.warn("⚠️ Supabase is not configured.");
@@ -393,7 +393,7 @@ export default function VeridianNews() {
       }
     } catch (error: any) { 
       console.error("❌ Unexpected error in loadNews:", error); 
-      setError(`FALLO_CRÍTICO: ${error.message || 'Error desconocido'}`);
+      setError(`Fallo crítico: ${error.message || 'Error desconocido'}`);
     } finally {
       setIsLoading(false);
     }
@@ -468,9 +468,9 @@ export default function VeridianNews() {
                     <div className="flex flex-col">
                       <div className="flex items-center gap-2">
                         <Globe className="w-3.5 h-3.5 text-emerald-500" />
-                        <span className="text-[10px] font-black text-emerald-500 tracking-[0.2em] uppercase italic">Veridian_System_v2</span>
+                        <span className="text-[10px] font-black text-emerald-500 tracking-[0.2em] uppercase italic">Veridian News</span>
                       </div>
-                      <span className="text-[7px] font-mono text-emerald-500/40 tracking-[0.4em] mt-0.5 uppercase">• Tactical Feed Active</span>
+                      <span className="text-[7px] font-mono text-emerald-500/40 tracking-[0.4em] mt-0.5 uppercase">• Canal de noticias activo</span>
                     </div>
                   </div>
                 </div>
@@ -532,7 +532,7 @@ export default function VeridianNews() {
                           onClick={() => window.location.reload()}
                           className="mt-4 px-6 py-2 border border-emerald-500/20 rounded-full text-[9px] font-black uppercase tracking-widest text-emerald-500/60 hover:bg-emerald-500/10 transition-all"
                         >
-                          REINTENTAR_CONEXIÓN
+                          REINTENTAR
                         </button>
                       </>
                     ) : debouncedSearchQuery ? (
@@ -545,7 +545,7 @@ export default function VeridianNews() {
                           onClick={() => setSearchQuery('')}
                           className="mt-4 px-6 py-2 border border-emerald-500/20 rounded-full text-[9px] font-black uppercase tracking-widest text-emerald-500/60 hover:bg-emerald-500/10 transition-all"
                         >
-                          Limpiar_Búsqueda
+                          Limpiar búsqueda
                         </button>
                       </>
                     ) : (
@@ -603,4 +603,4 @@ export default function VeridianNews() {
 }
 
 
-// VERIDIAN_SYSTEM_SYNC_ACTIVE_2024_05_04_1340
+// Veridian News System Active

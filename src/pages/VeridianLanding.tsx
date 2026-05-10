@@ -42,7 +42,7 @@ const VeridianLanding = () => {
           <div className="w-16 h-16 border-t-2 border-emerald-500 rounded-full animate-spin shadow-[0_0_20px_rgba(16,185,129,0.3)]" />
           <div className="flex flex-col items-center gap-2">
             <span className="text-[10px] font-mono text-emerald-500/60 uppercase tracking-[0.5em] animate-pulse">
-              {isRedirecting ? 'AUTORIZANDO_ACCESO...' : 'SINCRONIZANDO_TERMINAL...'}
+              {isRedirecting ? 'Autorizando...' : 'Cargando...'}
             </span>
             <div className="w-48 h-0.5 bg-white/5 rounded-full overflow-hidden">
               <motion.div 
@@ -82,6 +82,22 @@ const VeridianLanding = () => {
     e.preventDefault();
     if (isLoading || isRedirecting) return;
 
+    // Validación de contraseña
+    if (password) {
+      if (password.length < 8) {
+        toast.error("Contraseña muy corta", { description: "La contraseña debe tener al menos 8 caracteres." });
+        return;
+      }
+      if (!/[A-Z]/.test(password)) {
+        toast.error("Falta mayúscula", { description: "La contraseña debe contener al menos una letra mayúscula." });
+        return;
+      }
+      if (!/[0-9!@#$%^&*]/.test(password)) {
+        toast.error("Falta carácter especial o número", { description: "La contraseña debe contener al menos un número o carácter especial." });
+        return;
+      }
+    }
+
     setIsLoading(true);
     setError(null);
 
@@ -90,21 +106,21 @@ const VeridianLanding = () => {
         const { error: loginError } = await signInWithPassword(email.trim(), password);
         if (loginError) {
           setError("Acceso Denegado. Credenciales Inválidas.");
-          toast.error("ERROR_AUTENTICACION", { description: "Verifica protocolo y clave." });
+          toast.error("Error de acceso", { description: "Verifica tu email y contraseña." });
           setIsLoading(false);
         } else {
           setIsRedirecting(true); // Bloqueo total tras éxito
-          toast.success("ACCESO_CONCEDIDO", { description: "Sincronizando terminal..." });
+          toast.success("Acceso concedido", { description: "Entrando en Veridian..." });
         }
       } else {
         const { error: magicError } = await signInWithMagicLink(email.trim());
         if (magicError) {
           setError(magicError.message);
-          toast.error("ERROR_ENLACE", { description: magicError.message });
+          toast.error("Error de enlace", { description: magicError.message });
           setIsLoading(false);
         } else {
           setIsSent(true);
-          toast.success("ENLACE_ENVIADO", { description: "Revisa el canal de entrada." });
+          toast.success("Enlace enviado", { description: "Revisa tu bandeja de entrada." });
           setIsLoading(false);
         }
       }
@@ -116,14 +132,14 @@ const VeridianLanding = () => {
 
   const handleForgotPassword = async () => {
     if (!email) {
-      toast.error("EMAIL_REQUERIDO", { description: "Introduce identificador para reset." });
+      toast.error("Email requerido", { description: "Introduce tu email para restablecer la contraseña." });
       return;
     }
     setIsLoading(true);
     try {
       const { error } = await resetPasswordForEmail(email.trim());
-      if (error) toast.error("ERROR_RESET", { description: error.message });
-      else toast.success("RESET_ENVIADO", { description: "Instrucciones enviadas al terminal." });
+      if (error) toast.error("Error", { description: error.message });
+      else toast.success("Enviado", { description: "Instrucciones enviadas a tu email." });
     } finally {
       setIsLoading(false);
     }
@@ -167,7 +183,7 @@ const VeridianLanding = () => {
           </div>
           <div className="flex flex-col">
             <span className="text-xl font-black tracking-[0.2em] uppercase italic leading-none">Veridian</span>
-            <span className="text-[8px] font-mono text-emerald-500/40 tracking-[0.4em] mt-1 uppercase leading-none">Intelligence_System</span>
+            <span className="text-[8px] font-mono text-emerald-500/40 tracking-[0.4em] mt-1 uppercase leading-none">Intelligence System</span>
           </div>
         </div>
         <div className="px-5 py-2 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-500 text-[10px] font-black uppercase tracking-[0.2em]">
@@ -195,7 +211,7 @@ const VeridianLanding = () => {
                   className="py-20 flex flex-col items-center gap-6"
                 >
                   <div className="w-16 h-16 border-t-2 border-emerald-500 rounded-full animate-spin shadow-[0_0_20px_rgba(16,185,129,0.3)]" />
-                  <span className="text-[10px] font-mono text-emerald-500/60 uppercase tracking-[0.5em] animate-pulse italic">Iniciando_Protocolo_Acceso</span>
+                  <span className="text-[10px] font-mono text-emerald-500/60 uppercase tracking-[0.5em] animate-pulse italic">Iniciando sesión...</span>
                 </motion.div>
               ) : !isSent ? (
                 <motion.div 
@@ -209,11 +225,11 @@ const VeridianLanding = () => {
                     <motion.h2 
                       className="text-2xl md:text-4xl font-black uppercase tracking-tight italic leading-none text-white"
                     >
-                      ACCESO_TERMINAL
+                      ENTRAR
                     </motion.h2>
                     <div className="flex items-center justify-center gap-2">
                       <div className="w-1 h-1 md:w-1.5 md:h-1.5 bg-emerald-500 rounded-full animate-pulse" />
-                      <p className="text-[8px] md:text-[10px] font-mono uppercase tracking-[0.3em] md:tracking-[0.4em] text-white/30 italic">Protocolo_Identificación</p>
+                      <p className="text-[8px] md:text-[10px] font-mono uppercase tracking-[0.3em] md:tracking-[0.4em] text-white/30 italic">Identificación</p>
                     </div>
                   </div>
 
@@ -238,14 +254,14 @@ const VeridianLanding = () => {
                         <div className="w-full border-t border-white/5"></div>
                       </div>
                       <div className="relative flex justify-center">
-                        <span className="bg-[#0A0A0A] px-4 text-[8px] md:text-[10px] font-black uppercase tracking-[0.3em] text-white/10 italic">O Protocolo Manual</span>
+                        <span className="bg-[#0A0A0A] px-4 text-[8px] md:text-[10px] font-black uppercase tracking-[0.3em] text-white/10 italic">O manualmente</span>
                       </div>
                     </div>
 
                     <form onSubmit={handleSubmit} className="space-y-4 md:space-y-8">
                       <div className="space-y-3 md:space-y-6">
                         <div className="space-y-1.5 md:space-y-3">
-                          <label className="text-[8px] md:text-[10px] font-black uppercase tracking-[0.2em] text-white/20 ml-2">ID_Email</label>
+                          <label className="text-[8px] md:text-[10px] font-black uppercase tracking-[0.2em] text-white/20 ml-2">Email</label>
                           <div className="relative group">
                             <Mail className="absolute left-4 md:left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/10 group-focus-within:text-emerald-500 transition-colors" />
                             <input
@@ -253,7 +269,7 @@ const VeridianLanding = () => {
                               value={email}
                               onChange={(e) => setEmail(e.target.value)}
                               className="w-full h-11 md:h-16 bg-white/5 border border-white/10 rounded-xl md:rounded-2xl pl-12 md:pl-14 pr-4 text-[13px] md:text-sm focus:outline-none focus:border-emerald-500/50 transition-all font-mono placeholder:text-white/5"
-                              placeholder="operador@veridian.intel"
+                              placeholder="tu@email.com"
                               required
                             />
                           </div>
@@ -261,13 +277,13 @@ const VeridianLanding = () => {
 
                         <div className="space-y-1.5 md:space-y-3">
                           <div className="flex justify-between items-center px-2">
-                            <label className="text-[8px] md:text-[10px] font-black uppercase tracking-[0.2em] text-white/20">Password_Acceso</label>
+                            <label className="text-[8px] md:text-[10px] font-black uppercase tracking-[0.2em] text-white/20">Contraseña</label>
                             <button 
                               type="button" 
                               onClick={handleForgotPassword}
                               className="text-[8px] md:text-[9px] font-black text-emerald-500/60 hover:text-emerald-400 uppercase tracking-widest transition-colors"
                             >
-                              RESET_PASSWORD?
+                              ¿Has olvidado la contraseña?
                             </button>
                           </div>
                           <div className="relative group">
@@ -288,6 +304,7 @@ const VeridianLanding = () => {
                               {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                             </button>
                           </div>
+                          <p className="text-[8px] text-white/20 uppercase tracking-widest ml-2 italic">Mínimo 8 caracteres, una mayúscula y un número o símbolo.</p>
                         </div>
                       </div>
 
@@ -298,7 +315,7 @@ const VeridianLanding = () => {
                           className="w-full h-11 md:h-16 rounded-xl md:rounded-2xl text-[10px] md:text-[12px] font-black uppercase tracking-[0.4em] transition-all relative overflow-hidden bg-emerald-500 hover:bg-emerald-400 text-black shadow-[0_15px_30px_rgba(16,185,129,0.2)]"
                         >
                           <span className="relative z-10 flex items-center justify-center gap-2 md:gap-3">
-                            {isLoading ? 'SINCRONIZANDO...' : 'ACCEDER_TERMINAL'} 
+                            {isLoading ? 'Entrando...' : 'ENTRAR'} 
                             {!isLoading && <ArrowRight className="w-4 h-4 md:w-5 md:h-5" />}
                           </span>
                         </Button>
@@ -310,7 +327,7 @@ const VeridianLanding = () => {
                           onClick={() => setAuthMode(authMode === 'login' ? 'signup' : 'login')}
                           className="text-[9px] md:text-[11px] font-black uppercase tracking-[0.3em] text-white/20 hover:text-white transition-all border-b border-white/5 hover:border-emerald-500/50 pb-1"
                         >
-                          {authMode === 'login' ? '¿NO TIENE TERMINAL? REGISTRAR' : '¿YA TIENE TERMINAL? ACCEDER'}
+                          {authMode === 'login' ? '¿NO TIENES CUENTA? REGÍSTRATE' : '¿YA TIENES CUENTA? ENTRA'}
                         </button>
                       </div>
                     </form>
@@ -362,7 +379,7 @@ const VeridianLanding = () => {
         <div className="flex items-center gap-2">
           <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
           <div className="text-[7px] md:text-[10px] font-mono text-white/20 uppercase tracking-[0.3em] md:tracking-[0.4em] leading-none">
-            Veridian_Systems_Operating_Normal
+            Veridian Systems Operating Normal
           </div>
         </div>
         <div className="flex items-center gap-4 md:gap-8 text-[7px] md:text-[10px] font-black uppercase tracking-[0.2em] md:tracking-[0.3em] text-white/20">
