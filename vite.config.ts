@@ -69,6 +69,13 @@ export default defineConfig(({ mode }) => ({
         main: path.resolve(__dirname, 'index.html'),
         "veridian-news": path.resolve(__dirname, 'index.html')
       },
+      output: {
+        manualChunks: {
+          'vendor-react': ['react', 'react-dom', 'react-router-dom'],
+          'vendor-ui': ['framer-motion', 'lucide-react', 'clsx', 'tailwind-merge'],
+          'vendor-supabase': ['@supabase/supabase-js'],
+        }
+      },
       external: (id) => {
         if (id.includes('/api/') || id.includes('\\api\\') || id.startsWith('./api/') || id.startsWith('../api/') || id.includes('api/news')) {
           return true;

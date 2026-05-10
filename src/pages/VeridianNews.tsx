@@ -14,8 +14,8 @@ import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { useSearch } from "@/contexts/SearchContext";
 import { NewsItem } from "@/types/news";
-import { IntelligencePanel } from "../components/IntelligencePanel";
-import { OnboardingOverlay } from "../components/OnboardingOverlay";
+const IntelligencePanel = React.lazy(() => import("../components/IntelligencePanel").then(module => ({ default: module.IntelligencePanel })));
+const OnboardingOverlay = React.lazy(() => import("../components/OnboardingOverlay").then(module => ({ default: module.OnboardingOverlay })));
 import { normalizeCategory, detectCategory, shuffleNews, recommendNews, extractKeyPoints, searchNews } from "@/utils/news-utils";
 import { mixpanelTrack } from "@/lib/mixpanel";
 import { startTransition } from "react";
@@ -69,7 +69,11 @@ export default function VeridianNews() {
   const [likedNewsIds, setLikedNewsIds] = useState<Set<string>>(new Set());
   const [userPreferences, setUserPreferences] = useState<Map<string, number>>(new Map());
   // Inicializar vacío - solo mostrar noticias del Excel
-  const [rawNews, setRawNews] = useState<NewsItem[]>([]); // Noticias sin ordenar - solo del Excel
+  const [rawNews, setRawNews] = useState<NewsItem[]>([]); 
+  const [page, setPage] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
+  const [isFetchingMore, setIsFetchingMore] = useState(false);
+  const PAGE_SIZE = 25;
   const feedContainerRef = useRef<HTMLDivElement>(null);
   const categoryBarRef = useRef<HTMLDivElement>(null);
   const loadingProgressRef = useRef<HTMLDivElement>(null);
@@ -222,6 +226,11 @@ export default function VeridianNews() {
             const index = Number(entry.target.getAttribute('data-index'));
             if (!isNaN(index) && displayNews[index]) {
               setCurrentVisibleNews(displayNews[index]);
+              
+              // Cargar más si estamos cerca del final
+              if (index >= displayNews.length - 3 && hasMore && !isFetchingMore) {
+                loadMoreNews();
+              }
             }
           }
         });
@@ -358,7 +367,7 @@ export default function VeridianNews() {
           .from('daily_news')
           .select('*')
           .order('created_at', { ascending: false })
-          .limit(1000);
+          .range(0, PAGE_SIZE - 1);
 
         if (sbError) {
           console.error("❌ Error fetching from Supabase:", sbError);
@@ -396,6 +405,50 @@ export default function VeridianNews() {
       setError(`Fallo crítico: ${error.message || 'Error desconocido'}`);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const loadMoreNews = async () => {
+    if (isFetchingMore || !hasMore || !isSupabaseConfigured()) return;
+    
+    setIsFetchingMore(true);
+    const nextPage = page + 1;
+    const from = nextPage * PAGE_SIZE;
+    const to = from + PAGE_SIZE - 1;
+
+    try {
+      const { data, error: sbError } = await (supabase as any)
+        .from('daily_news')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .range(from, to);
+
+      if (sbError) throw sbError;
+
+      if (data && data.length > 0) {
+        const processed = data.map((item: any) => ({
+          id: item.id,
+          title: item.title,
+          summary: item.summary,
+          content: item.content || item.context || item.body || item.full_text || item.article || item.summary,
+          image: item.image || item.image_url,
+          date: item.published_at || item.created_at,
+          source: item.source || 'VERIDIAN_INTEL',
+          url: item.url,
+          category: item.category || detectCategory(item.title, item.content || item.summary),
+          analysis: item.analysis
+        }));
+        
+        setRawNews(prev => [...prev, ...processed]);
+        setPage(nextPage);
+        if (data.length < PAGE_SIZE) setHasMore(false);
+      } else {
+        setHasMore(false);
+      }
+    } catch (error) {
+      console.error("Error fetching more news:", error);
+    } finally {
+      setIsFetchingMore(false);
     }
   };
 
@@ -581,21 +634,25 @@ export default function VeridianNews() {
               </div>
             </main>
 
-            <IntelligencePanel 
-              isOpen={showContentModal}
-              onClose={() => setShowContentModal(false)}
-              selectedNews={selectedNews}
-              aiAnalysis={aiAnalysis}
-              isAiLoading={isAiLoading}
-              extractKeyPoints={extractKeyPoints}
-            />
+            <React.Suspense fallback={null}>
+              <IntelligencePanel 
+                isOpen={showContentModal}
+                onClose={() => setShowContentModal(false)}
+                selectedNews={selectedNews}
+                aiAnalysis={aiAnalysis}
+                isAiLoading={isAiLoading}
+                extractKeyPoints={extractKeyPoints}
+              />
+            </React.Suspense>
 
             <BottomDock />
             
-            <OnboardingOverlay 
-              show={showOnboarding}
-              onComplete={handleCompleteOnboarding}
-            />
+            <React.Suspense fallback={null}>
+              <OnboardingOverlay 
+                show={showOnboarding}
+                onComplete={handleCompleteOnboarding}
+              />
+            </React.Suspense>
           </motion.div>
       </AnimatePresence>
     </div>

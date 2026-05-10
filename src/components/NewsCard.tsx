@@ -213,12 +213,11 @@ export const NewsCard = memo(({ item, isActive, isLiked, index, onLike, onShare,
                         className="w-24 h-24 md:w-48 md:h-48 rounded-full overflow-hidden border border-emerald-500/30 relative shadow-[0_0_40px_rgba(16,185,129,0.15)] bg-black"
                     >
                         {item.image ? (
-                            <img 
+                            <NewsImage 
                                 src={item.image} 
                                 alt="Intel Visual" 
-                                className="w-full h-full object-cover filter grayscale brightness-75 contrast-125" 
-                                loading="eager"
-                                decoding="async"
+                                className="w-full h-full grayscale brightness-75 contrast-125" 
+                                priority={isActive}
                             />
                         ) : (
                             <div className="w-full h-full bg-[#0a1510] flex items-center justify-center">
