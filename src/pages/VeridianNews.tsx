@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo } from "react";
+import React, { useState, useEffect, useRef, useMemo, lazy, Suspense } from "react";
 import { useNavigate, useSearchParams, Link } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
@@ -14,8 +14,8 @@ import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { useSearch } from "@/contexts/SearchContext";
 import { NewsItem } from "@/types/news";
-const IntelligencePanel = React.lazy(() => import("../components/IntelligencePanel").then(module => ({ default: module.IntelligencePanel })));
-const OnboardingOverlay = React.lazy(() => import("../components/OnboardingOverlay").then(module => ({ default: module.OnboardingOverlay })));
+const IntelligencePanel = lazy(() => import("../components/IntelligencePanel").then(module => ({ default: module.IntelligencePanel })));
+const OnboardingOverlay = lazy(() => import("../components/OnboardingOverlay").then(module => ({ default: module.OnboardingOverlay })));
 import { normalizeCategory, detectCategory, shuffleNews, recommendNews, extractKeyPoints, searchNews } from "@/utils/news-utils";
 import { mixpanelTrack } from "@/lib/mixpanel";
 import { startTransition } from "react";
@@ -634,7 +634,7 @@ export default function VeridianNews() {
               </div>
             </main>
 
-            <React.Suspense fallback={null}>
+            <Suspense fallback={null}>
               <IntelligencePanel 
                 isOpen={showContentModal}
                 onClose={() => setShowContentModal(false)}
@@ -643,16 +643,16 @@ export default function VeridianNews() {
                 isAiLoading={isAiLoading}
                 extractKeyPoints={extractKeyPoints}
               />
-            </React.Suspense>
+            </Suspense>
 
             <BottomDock />
             
-            <React.Suspense fallback={null}>
+            <Suspense fallback={null}>
               <OnboardingOverlay 
                 show={showOnboarding}
                 onComplete={handleCompleteOnboarding}
               />
-            </React.Suspense>
+            </Suspense>
           </motion.div>
       </AnimatePresence>
     </div>
