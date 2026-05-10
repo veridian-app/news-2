@@ -15,6 +15,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [isSent, setIsSent] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [mode, setMode] = useState<'signin' | 'signup'>('signin');
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -38,10 +39,26 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
         }
     };
 
+    const handleGoogleLogin = async () => {
+        setIsLoading(true);
+        setError(null);
+        try {
+            const { error: authError } = await signInWithGoogle();
+            if (authError) {
+                setError(authError.message);
+                setIsLoading(false);
+            }
+        } catch (err: any) {
+            setError(err.message || 'Error al iniciar sesión con Google');
+            setIsLoading(false);
+        }
+    };
+
     const handleClose = () => {
         setEmail('');
         setIsSent(false);
         setError(null);
+        setMode('signin');
         onClose();
     };
 
@@ -83,13 +100,16 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                                 {!isSent ? (
                                     <>
                                         <div className="text-center mb-8">
-                                            <div className="w-16 h-16 bg-gradient-to-tr from-green-500 to-emerald-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-green-500/20">
+                                            <div className={`w-16 h-16 bg-gradient-to-tr ${mode === 'signup' ? 'from-emerald-400 to-cyan-400' : 'from-green-500 to-emerald-500'} rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg ${mode === 'signup' ? 'shadow-emerald-500/20' : 'shadow-green-500/20'}`}>
                                                 <Mail className="w-8 h-8 text-white" />
                                             </div>
                                             <h2 className="text-2xl font-bold text-white mb-2">
-                                                Entra a Veridian
+                                                {mode === 'signin' ? 'Bienvenido de nuevo' : 'Crea tu cuenta'}
                                             </h2>
                                             <p className="text-white/60 text-sm">
+                                                {mode === 'signin' 
+                                                    ? 'Entra para acceder a tu terminal Veridian' 
+                                                    : 'Únete a la nueva era de inteligencia informativa'}
                                             </p>
                                         </div>
 
@@ -117,7 +137,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                                                         d="M12 5.38c1.62 0 3.06.56 4.21 1.66l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
                                                     />
                                                 </svg>
-                                                <span className="text-black font-bold text-[10px] uppercase tracking-widest">Entrar con Google</span>
+                                                <span className="text-black font-bold text-[10px] uppercase tracking-widest">
+                                                    {mode === 'signin' ? 'Entrar con Google' : 'Registrarse con Google'}
+                                                </span>
                                             </button>
 
                                             <div className="relative py-2">
@@ -130,47 +152,59 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                                             </div>
 
                                             <form onSubmit={handleSubmit} className="space-y-4">
-                                            <div>
-                                                <input
-                                                    type="email"
-                                                    value={email}
-                                                    onChange={(e) => setEmail(e.target.value)}
-                                                    placeholder="tu@email.com"
-                                                    className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-xl text-white placeholder:text-white/30 focus:outline-none focus:border-green-500/50 focus:ring-1 focus:ring-green-500/50 transition-all"
+                                                <div>
+                                                    <input
+                                                        type="email"
+                                                        value={email}
+                                                        onChange={(e) => setEmail(e.target.value)}
+                                                        placeholder="tu@email.com"
+                                                        className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-xl text-white placeholder:text-white/30 focus:outline-none focus:border-green-500/50 focus:ring-1 focus:ring-green-500/50 transition-all"
+                                                        disabled={isLoading}
+                                                        autoFocus
+                                                    />
+                                                </div>
+
+                                                {error && (
+                                                    <p className="text-red-400 text-sm text-center">{error}</p>
+                                                )}
+
+                                                <Button
+                                                    type="submit"
                                                     disabled={isLoading}
-                                                    autoFocus
-                                                />
+                                                    className={`w-full ${mode === 'signup' ? 'bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-600 hover:to-cyan-600' : 'bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600'} text-white font-semibold py-6 rounded-xl transition-all flex items-center justify-center gap-2`}
+                                                >
+                                                    {isLoading ? (
+                                                        <Loader2 className="w-5 h-5 animate-spin" />
+                                                    ) : (
+                                                        <>
+                                                            {mode === 'signin' ? 'Entrar' : 'Registrarse'} <ArrowRight className="w-5 h-5" />
+                                                        </>
+                                                    )}
+                                                </Button>
+                                            </form>
+
+                                            <div className="text-center mt-6">
+                                                <button
+                                                    onClick={() => setMode(mode === 'signin' ? 'signup' : 'signin')}
+                                                    className="text-[10px] uppercase tracking-widest font-bold text-white/40 hover:text-emerald-400 transition-colors"
+                                                >
+                                                    {mode === 'signin' 
+                                                        ? '¿No tienes cuenta? Regístrate' 
+                                                        : '¿Ya tienes cuenta? Inicia sesión'}
+                                                </button>
                                             </div>
 
-                                            {error && (
-                                                <p className="text-red-400 text-sm text-center">{error}</p>
-                                            )}
-
-                                            <Button
-                                                type="submit"
-                                                disabled={isLoading}
-                                                className="w-full bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-semibold py-6 rounded-xl transition-all flex items-center justify-center gap-2"
-                                            >
-                                                {isLoading ? (
-                                                    <Loader2 className="w-5 h-5 animate-spin" />
-                                                ) : (
-                                                    <>
-                                                        Continuar <ArrowRight className="w-5 h-5" />
-                                                    </>
-                                                )}
-                                            </Button>
-                                        </form>
-
-                                        <p className="text-center text-white/40 text-xs mt-6">
-                                            Al continuar, aceptas nuestros{' '}
-                                            <a href="/terminos" className="underline hover:text-white/60">
-                                                Términos
-                                            </a>{' '}
-                                            y{' '}
-                                            <a href="/privacidad" className="underline hover:text-white/60">
-                                                Política de Privacidad
-                                            </a>
-                                        </p>
+                                            <p className="text-center text-white/40 text-[10px] uppercase tracking-tight mt-6">
+                                                Al continuar, aceptas nuestros{' '}
+                                                <a href="/terminos" className="underline hover:text-white/60">
+                                                    Términos
+                                                </a>{' '}
+                                                y{' '}
+                                                <a href="/privacidad" className="underline hover:text-white/60">
+                                                    Privacidad
+                                                </a>
+                                            </p>
+                                        </div>
                                     </>
                                 ) : (
                                     <div className="text-center py-4">
@@ -178,14 +212,23 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                                             <CheckCircle className="w-8 h-8 text-green-400" />
                                         </div>
                                         <h2 className="text-2xl font-bold text-white mb-2">
-                                            ¡Revisa tu email!
+                                            {mode === 'signup' ? '¡Confirma tu email!' : '¡Revisa tu email!'}
                                         </h2>
                                         <p className="text-white/60 text-sm mb-6">
-                                            Hemos enviado un enlace mágico a<br />
+                                            {mode === 'signup' 
+                                                ? 'Hemos enviado un enlace de confirmación a'
+                                                : 'Hemos enviado un enlace mágico a'}<br />
                                             <span className="text-white font-medium">{email}</span>
                                         </p>
+                                        {mode === 'signup' && (
+                                            <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-3 mb-6">
+                                                <p className="text-emerald-400 text-[10px] uppercase tracking-widest font-bold">
+                                                    Pulsa en el enlace del correo para activar tu cuenta y empezar.
+                                                </p>
+                                            </div>
+                                        )}
                                         <p className="text-white/40 text-xs">
-                                            No lo ves? Revisa tu carpeta de spam
+                                            ¿No lo ves? Revisa tu carpeta de spam
                                         </p>
                                     </div>
                                 )}
