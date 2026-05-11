@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Mail, Lock, Shield, ArrowRight, CheckCircle2, Eye, EyeOff } from 'lucide-react';
+import { Mail, Lock, Shield, ArrowRight, CheckCircle2, Eye, EyeOff, UserPlus, Fingerprint } from 'lucide-react';
 import { Button } from "../components/ui/button";
 import { useAuth } from '../contexts/AuthContext';
 import { toast } from 'sonner';
@@ -27,6 +27,17 @@ const VeridianLanding = () => {
     }
   }, [isAuthenticated, isAuthLoading, navigate]);
 
+  // Mostrar el toast si se ha enviado el email en modo registro
+  useEffect(() => {
+    if (isSent && authMode === 'signup') {
+      toast.info("REVISA TU EMAIL", {
+        description: "El enlace puede haber llegado a la carpeta de SPAM. Por favor, compruébalo.",
+        duration: 10000,
+        position: 'top-center',
+      });
+    }
+  }, [isSent, authMode]);
+
   // Si el sistema de Auth está cargando la sesión inicial, mostramos la pantalla táctica de carga
   if (isAuthLoading || isRedirecting) {
     return (
@@ -39,14 +50,14 @@ const VeridianLanding = () => {
           animate={{ opacity: 1 }}
           className="flex flex-col items-center gap-6"
         >
-          <div className="w-16 h-16 border-t-2 border-emerald-500 rounded-full animate-spin shadow-[0_0_20px_rgba(16,185,129,0.3)]" />
+          <div className={`w-16 h-16 border-t-2 ${authMode === 'login' ? 'border-emerald-500' : 'border-cyan-500'} rounded-full animate-spin shadow-[0_0_20px_rgba(16,185,129,0.3)]`} />
           <div className="flex flex-col items-center gap-2">
-            <span className="text-[10px] font-mono text-emerald-500/60 uppercase tracking-[0.5em] animate-pulse">
+            <span className={`text-[10px] font-mono ${authMode === 'login' ? 'text-emerald-500/60' : 'text-cyan-500/60'} uppercase tracking-[0.5em] animate-pulse`}>
               {isRedirecting ? 'Autorizando...' : 'Cargando...'}
             </span>
             <div className="w-48 h-0.5 bg-white/5 rounded-full overflow-hidden">
               <motion.div 
-                className="h-full bg-emerald-500"
+                className={`h-full ${authMode === 'login' ? 'bg-emerald-500' : 'bg-cyan-500'}`}
                 initial={{ width: "0%" }}
                 animate={{ width: "100%" }}
                 transition={{ duration: 1.5, repeat: Infinity }}
@@ -156,7 +167,7 @@ const VeridianLanding = () => {
         <motion.div 
           animate={{ 
             scale: [1, 1.2, 1],
-            opacity: [0.05, 0.1, 0.05] 
+            opacity: authMode === 'login' ? [0.05, 0.1, 0.05] : [0.01, 0.03, 0.01]
           }}
           transition={{ duration: 10, repeat: Infinity }}
           className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-emerald-500 blur-[150px]" 
@@ -164,7 +175,7 @@ const VeridianLanding = () => {
         <motion.div 
           animate={{ 
             scale: [1, 1.3, 1],
-            opacity: [0.05, 0.08, 0.05] 
+            opacity: authMode === 'signup' ? [0.1, 0.2, 0.1] : [0.05, 0.08, 0.05] 
           }}
           transition={{ duration: 15, repeat: Infinity, delay: 2 }}
           className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-cyan-500 blur-[150px]" 
@@ -178,15 +189,17 @@ const VeridianLanding = () => {
         className="hidden md:flex w-full px-8 py-8 items-center justify-between border-b border-white/5 bg-black/40 backdrop-blur-md sticky top-0 z-[1000]"
       >
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shadow-[0_0_20px_rgba(16,185,129,0.1)]">
-            <Shield className="w-5 h-5 text-emerald-500" />
+          <div className={`w-10 h-10 rounded-xl ${authMode === 'login' ? 'bg-emerald-500/10 border-emerald-500/20' : 'bg-cyan-500/10 border-cyan-500/20'} border flex items-center justify-center shadow-[0_0_20px_rgba(16,185,129,0.1)]`}>
+            {authMode === 'login' ? <Shield className="w-5 h-5 text-emerald-500" /> : <UserPlus className="w-5 h-5 text-cyan-500" />}
           </div>
           <div className="flex flex-col">
             <span className="text-xl font-black tracking-[0.2em] uppercase italic leading-none">Veridian</span>
-            <span className="text-[8px] font-mono text-emerald-500/40 tracking-[0.4em] mt-1 uppercase leading-none">Intelligence System</span>
+            <span className={`text-[8px] font-mono ${authMode === 'login' ? 'text-emerald-500/40' : 'text-cyan-500/40'} tracking-[0.4em] mt-1 uppercase leading-none`}>
+              {authMode === 'login' ? 'Intelligence System' : 'Recruitment Protocol'}
+            </span>
           </div>
         </div>
-        <div className="px-5 py-2 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-500 text-[10px] font-black uppercase tracking-[0.2em]">
+        <div className={`px-5 py-2 rounded-lg ${authMode === 'login' ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-500' : 'bg-cyan-500/10 border-cyan-500/30 text-cyan-500'} border text-[10px] font-black uppercase tracking-[0.2em]`}>
           v.9.4
         </div>
       </motion.header>
@@ -198,8 +211,8 @@ const VeridianLanding = () => {
           transition={{ duration: 0.5 }}
           className="w-full max-w-lg relative"
         >
-          <div className="bg-[#0A0A0A]/90 backdrop-blur-3xl border border-white/10 rounded-[28px] md:rounded-[48px] p-6 md:p-16 shadow-[0_40px_100px_rgba(0,0,0,0.8)] relative overflow-hidden group">
-            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-emerald-500/40 to-transparent" />
+          <div className={`bg-[#0A0A0A]/90 backdrop-blur-3xl border ${authMode === 'login' ? 'border-white/10' : 'border-cyan-500/20'} rounded-[28px] md:rounded-[48px] p-6 md:p-16 shadow-[0_40px_100px_rgba(0,0,0,0.8)] relative overflow-hidden group`}>
+            <div className={`absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent ${authMode === 'login' ? 'via-emerald-500/40' : 'via-cyan-500/40'} to-transparent`} />
             
             <AnimatePresence mode="wait">
               {isLoading && !isSent ? (
@@ -210,8 +223,8 @@ const VeridianLanding = () => {
                   exit={{ opacity: 0 }}
                   className="py-20 flex flex-col items-center gap-6"
                 >
-                  <div className="w-16 h-16 border-t-2 border-emerald-500 rounded-full animate-spin shadow-[0_0_20px_rgba(16,185,129,0.3)]" />
-                  <span className="text-[10px] font-mono text-emerald-500/60 uppercase tracking-[0.5em] animate-pulse italic">Iniciando sesión...</span>
+                  <div className={`w-16 h-16 border-t-2 ${authMode === 'login' ? 'border-emerald-500' : 'border-cyan-500'} rounded-full animate-spin shadow-[0_0_20px_rgba(16,185,129,0.3)]`} />
+                  <span className={`text-[10px] font-mono ${authMode === 'login' ? 'text-emerald-500/60' : 'text-cyan-500/60'} uppercase tracking-[0.5em] animate-pulse italic`}>Iniciando sesión...</span>
                 </motion.div>
               ) : !isSent ? (
                 <motion.div 
@@ -223,6 +236,9 @@ const VeridianLanding = () => {
                 >
                   <div className="space-y-1 md:space-y-3 text-center">
                     <motion.h2 
+                      key={authMode}
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
                       className="text-2xl md:text-4xl font-black uppercase tracking-tight italic leading-none text-white"
                     >
                       {authMode === 'login' ? 'ENTRAR' : 'DARSE DE ALTA'}
@@ -267,12 +283,12 @@ const VeridianLanding = () => {
                         <div className="space-y-1.5 md:space-y-3">
                           <label className="text-[8px] md:text-[10px] font-black uppercase tracking-[0.2em] text-white/20 ml-2">Email</label>
                           <div className="relative group">
-                            <Mail className="absolute left-4 md:left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/10 group-focus-within:text-emerald-500 transition-colors" />
+                            <Mail className={`absolute left-4 md:left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/10 group-focus-within:${authMode === 'login' ? 'text-emerald-500' : 'text-cyan-500'} transition-colors`} />
                             <input
                               type="email"
                               value={email}
                               onChange={(e) => setEmail(e.target.value)}
-                              className="w-full h-11 md:h-16 bg-white/5 border border-white/10 rounded-xl md:rounded-2xl pl-12 md:pl-14 pr-4 text-[13px] md:text-sm focus:outline-none focus:border-emerald-500/50 transition-all font-mono placeholder:text-white/5"
+                              className={`w-full h-11 md:h-16 bg-white/5 border border-white/10 rounded-xl md:rounded-2xl pl-12 md:pl-14 pr-4 text-[13px] md:text-sm focus:outline-none focus:border-${authMode === 'login' ? 'emerald' : 'cyan'}-500/50 transition-all font-mono placeholder:text-white/5`}
                               placeholder="tu@email.com"
                               required
                             />
@@ -285,18 +301,18 @@ const VeridianLanding = () => {
                             <button 
                               type="button" 
                               onClick={handleForgotPassword}
-                              className="text-[8px] md:text-[9px] font-black text-emerald-500/60 hover:text-emerald-400 uppercase tracking-widest transition-colors"
+                              className={`text-[8px] md:text-[9px] font-black ${authMode === 'login' ? 'text-emerald-500/60 hover:text-emerald-400' : 'text-cyan-500/60 hover:text-cyan-400'} uppercase tracking-widest transition-colors`}
                             >
                               ¿Has olvidado la contraseña?
                             </button>
                           </div>
                           <div className="relative group">
-                            <Lock className="absolute left-4 md:left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/10 group-focus-within:text-emerald-500 transition-colors" />
+                            <Lock className={`absolute left-4 md:left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/10 group-focus-within:${authMode === 'login' ? 'text-emerald-500' : 'text-cyan-500'} transition-colors`} />
                             <input
                               type={showPassword ? "text" : "password"}
                               value={password}
                               onChange={(e) => setPassword(e.target.value)}
-                              className="w-full h-11 md:h-16 bg-white/5 border border-white/10 rounded-xl md:rounded-2xl pl-12 md:pl-14 pr-12 md:pr-14 text-[13px] md:text-sm focus:outline-none focus:border-emerald-500/50 transition-all font-mono placeholder:text-white/5"
+                              className={`w-full h-11 md:h-16 bg-white/5 border border-white/10 rounded-xl md:rounded-2xl pl-12 md:pl-14 pr-12 md:pr-14 text-[13px] md:text-sm focus:outline-none focus:border-${authMode === 'login' ? 'emerald' : 'cyan'}-500/50 transition-all font-mono placeholder:text-white/5`}
                               placeholder="••••••••"
                               required
                             />
@@ -316,7 +332,7 @@ const VeridianLanding = () => {
                         <Button 
                           type="submit"
                           disabled={isLoading}
-                          className={`w-full h-11 md:h-16 rounded-xl md:rounded-2xl text-[10px] md:text-[12px] font-black uppercase tracking-[0.4em] transition-all relative overflow-hidden ${authMode === 'login' ? 'bg-emerald-500 hover:bg-emerald-400' : 'bg-cyan-500 hover:bg-cyan-400'} text-black shadow-[0_15px_30px_rgba(16,185,129,0.2)]`}
+                          className={`w-full h-11 md:h-16 rounded-xl md:rounded-2xl text-[10px] md:text-[12px] font-black uppercase tracking-[0.4em] transition-all relative overflow-hidden ${authMode === 'login' ? 'bg-emerald-500 hover:bg-emerald-400 shadow-[0_15px_30px_rgba(16,185,129,0.2)]' : 'bg-cyan-500 hover:bg-cyan-400 shadow-[0_15px_30px_rgba(6,182,212,0.2)]'} text-black`}
                         >
                           <span className="relative z-10 flex items-center justify-center gap-2 md:gap-3">
                             {isLoading ? (authMode === 'login' ? 'Entrando...' : 'Procesando alta...') : (authMode === 'login' ? 'ENTRAR' : 'DARSE DE ALTA')} 
@@ -329,7 +345,7 @@ const VeridianLanding = () => {
                         <button
                           type="button"
                           onClick={() => setAuthMode(authMode === 'login' ? 'signup' : 'login')}
-                          className="text-[9px] md:text-[11px] font-black uppercase tracking-[0.3em] text-white/20 hover:text-white transition-all border-b border-white/5 hover:border-emerald-500/50 pb-1"
+                          className={`text-[9px] md:text-[11px] font-black uppercase tracking-[0.3em] text-white/20 hover:text-white transition-all border-b border-white/5 hover:border-${authMode === 'login' ? 'emerald' : 'cyan'}-500/50 pb-1`}
                         >
                           {authMode === 'login' ? '¿NO TIENES CUENTA? REGÍSTRATE' : '¿YA TIENES CUENTA? ENTRA'}
                         </button>
@@ -348,10 +364,10 @@ const VeridianLanding = () => {
                     <motion.div 
                       animate={{ rotate: 360 }}
                       transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
-                      className="absolute inset-0 border-2 border-dashed border-emerald-500/30 rounded-full"
+                      className={`absolute inset-0 border-2 border-dashed ${authMode === 'login' ? 'border-emerald-500/30' : 'border-cyan-500/30'} rounded-full`}
                     />
-                    <div className="absolute inset-2 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shadow-[0_0_50px_rgba(16,185,129,0.2)]">
-                      <CheckCircle2 className="w-8 h-8 md:w-12 md:h-12 text-emerald-500" />
+                    <div className={`absolute inset-2 rounded-full ${authMode === 'login' ? 'bg-emerald-500/10 border-emerald-500/20 shadow-[0_0_50px_rgba(16,185,129,0.2)]' : 'bg-cyan-500/10 border-cyan-500/20 shadow-[0_0_50px_rgba(6,182,212,0.2)]'} border flex items-center justify-center`}>
+                      <CheckCircle2 className={`w-8 h-8 md:w-12 md:h-12 ${authMode === 'login' ? 'text-emerald-500' : 'text-cyan-500'}`} />
                     </div>
                   </div>
                   <div className="space-y-2 md:space-y-3">
@@ -364,10 +380,10 @@ const VeridianLanding = () => {
                         : 'Confirma tu email para activar tu cuenta Veridian.'}
                     </p>
                     {authMode === 'signup' && (
-                      <div className="mt-4 px-4 py-4 bg-emerald-500/5 border border-emerald-500/10 rounded-xl">
-                        <p className="text-[9px] text-emerald-400 uppercase tracking-widest font-black leading-relaxed">
+                      <div className="mt-4 px-4 py-4 bg-cyan-500/5 border border-cyan-500/10 rounded-xl">
+                        <p className="text-[9px] text-cyan-400 uppercase tracking-widest font-black leading-relaxed">
                           PULSA EL ENLACE DEL CORREO PARA COMPLETAR EL ALTA.<br/>
-                          <span className="text-white/40 text-[7px] mt-2 block">SI NO APARECE EN TU BANDEJA, REVISA TU CARPETA DE SPAM.</span>
+                          <span className="text-white/40 text-[7px] mt-2 block italic">SI NO APARECE EN TU BANDEJA, REVISA TU CARPETA DE SPAM.</span>
                         </p>
                       </div>
                     )}
@@ -375,7 +391,7 @@ const VeridianLanding = () => {
                   <Button 
                     onClick={() => setIsSent(false)}
                     variant="ghost" 
-                    className="text-[8px] md:text-[10px] font-black uppercase tracking-[0.3em] text-emerald-500/60 hover:text-emerald-400"
+                    className={`text-[8px] md:text-[10px] font-black uppercase tracking-[0.3em] ${authMode === 'login' ? 'text-emerald-500/60 hover:text-emerald-400' : 'text-cyan-500/60 hover:text-cyan-400'}`}
                   >
                     Volver
                   </Button>
@@ -393,7 +409,7 @@ const VeridianLanding = () => {
         className="w-full px-6 pb-6 pt-2 flex flex-col items-center gap-3 md:flex-row md:justify-between md:px-10 md:py-8 border-t border-white/5 bg-black/20"
       >
         <div className="flex items-center gap-2">
-          <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+          <div className={`w-1.5 h-1.5 rounded-full ${authMode === 'login' ? 'bg-emerald-500' : 'bg-cyan-500'} animate-pulse`} />
           <div className="text-[7px] md:text-[10px] font-mono text-white/20 uppercase tracking-[0.3em] md:tracking-[0.4em] leading-none">
             Veridian Systems Operating Normal
           </div>

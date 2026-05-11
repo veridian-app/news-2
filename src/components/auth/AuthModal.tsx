@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Mail, Loader2, CheckCircle, ArrowRight } from 'lucide-react';
+import { X, Mail, Loader2, CheckCircle, ArrowRight, UserPlus, Fingerprint } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
+import { toast } from 'sonner';
 
 interface AuthModalProps {
     isOpen: boolean;
@@ -38,6 +39,17 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
             setIsSent(true);
         }
     };
+
+    // Mostrar el toast si se ha enviado el email en modo registro
+    useEffect(() => {
+        if (isSent && mode === 'signup') {
+            toast.info("CHEQUEE SU CORREO", {
+                description: "El enlace puede estar en la carpeta de SPAM. Por favor, compruébelo.",
+                duration: 8000,
+                position: 'top-center',
+            });
+        }
+    }, [isSent, mode]);
 
     const handleGoogleLogin = async () => {
         setIsLoading(true);
@@ -83,10 +95,10 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                         transition={{ type: 'spring', damping: 25, stiffness: 300 }}
                         className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md z-50 px-4"
                     >
-                        <div className="bg-zinc-900 border border-white/10 rounded-2xl p-8 shadow-2xl relative overflow-hidden">
+                        <div className={`bg-zinc-900 border ${mode === 'signin' ? 'border-white/10' : 'border-cyan-500/20'} rounded-2xl p-8 shadow-2xl relative overflow-hidden`}>
                             {/* Glow effect */}
-                            <div className="absolute -top-20 -right-20 w-40 h-40 bg-green-500/20 rounded-full blur-3xl" />
-                            <div className="absolute -bottom-20 -left-20 w-40 h-40 bg-emerald-500/20 rounded-full blur-3xl" />
+                            <div className={`absolute -top-20 -right-20 w-40 h-40 ${mode === 'signin' ? 'bg-green-500/20' : 'bg-cyan-500/20'} rounded-full blur-3xl`} />
+                            <div className={`absolute -bottom-20 -left-20 w-40 h-40 ${mode === 'signin' ? 'bg-emerald-500/20' : 'bg-blue-500/20'} rounded-full blur-3xl`} />
 
                             {/* Close button */}
                             <button
@@ -100,16 +112,16 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                                 {!isSent ? (
                                     <>
                                         <div className="text-center mb-8">
-                                            <div className={`w-16 h-16 bg-gradient-to-tr ${mode === 'signup' ? 'from-emerald-400 to-cyan-400' : 'from-green-500 to-emerald-500'} rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg ${mode === 'signup' ? 'shadow-emerald-500/20' : 'shadow-green-500/20'}`}>
-                                                <Mail className="w-8 h-8 text-white" />
+                                            <div className={`w-16 h-16 bg-gradient-to-tr ${mode === 'signup' ? 'from-cyan-400 to-blue-500 shadow-cyan-500/20' : 'from-green-500 to-emerald-500 shadow-green-500/20'} rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg transition-all duration-500`}>
+                                                {mode === 'signin' ? <Fingerprint className="w-8 h-8 text-white" /> : <UserPlus className="w-8 h-8 text-white" />}
                                             </div>
-                                            <h2 className="text-2xl font-bold text-white mb-2">
-                                                {mode === 'signin' ? 'Bienvenido de nuevo' : 'Crea tu cuenta'}
+                                            <h2 className="text-2xl font-bold text-white mb-2 transition-all">
+                                                {mode === 'signin' ? 'Bienvenido de nuevo' : 'DARSE DE ALTA'}
                                             </h2>
                                             <p className="text-white/60 text-sm">
                                                 {mode === 'signin' 
                                                     ? 'Entra para acceder a tu terminal Veridian' 
-                                                    : 'Únete a la nueva era de inteligencia informativa'}
+                                                    : 'Inicia el protocolo de reclutamiento táctico'}
                                             </p>
                                         </div>
 
@@ -138,7 +150,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                                                     />
                                                 </svg>
                                                 <span className="text-black font-bold text-[10px] uppercase tracking-widest">
-                                                    {mode === 'signin' ? 'Entrar con Google' : 'Registrarse con Google'}
+                                                    {mode === 'signin' ? 'Entrar con Google' : 'Darse de alta con Google'}
                                                 </span>
                                             </button>
 
@@ -158,7 +170,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                                                         value={email}
                                                         onChange={(e) => setEmail(e.target.value)}
                                                         placeholder="tu@email.com"
-                                                        className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-xl text-white placeholder:text-white/30 focus:outline-none focus:border-green-500/50 focus:ring-1 focus:ring-green-500/50 transition-all"
+                                                        className={`w-full px-4 py-3 bg-black/50 border ${mode === 'signin' ? 'border-white/10' : 'border-cyan-500/20'} rounded-xl text-white placeholder:text-white/30 focus:outline-none focus:border-${mode === 'signin' ? 'green' : 'cyan'}-500/50 focus:ring-1 focus:ring-${mode === 'signin' ? 'green' : 'cyan'}-500/50 transition-all`}
                                                         disabled={isLoading}
                                                         autoFocus
                                                     />
@@ -171,7 +183,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                                                 <Button
                                                     type="submit"
                                                     disabled={isLoading}
-                                                    className={`w-full ${mode === 'signup' ? 'bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-600 hover:to-cyan-600' : 'bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600'} text-white font-semibold py-6 rounded-xl transition-all flex items-center justify-center gap-2`}
+                                                    className={`w-full ${mode === 'signup' ? 'bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 shadow-cyan-500/20' : 'bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 shadow-green-500/20'} text-white font-semibold py-6 rounded-xl transition-all flex items-center justify-center gap-2 shadow-lg`}
                                                 >
                                                     {isLoading ? (
                                                         <Loader2 className="w-5 h-5 animate-spin" />
@@ -186,7 +198,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                                             <div className="text-center mt-6">
                                                 <button
                                                     onClick={() => setMode(mode === 'signin' ? 'signup' : 'signin')}
-                                                    className="text-[10px] uppercase tracking-widest font-bold text-white/40 hover:text-emerald-400 transition-colors"
+                                                    className={`text-[10px] uppercase tracking-widest font-bold text-white/40 hover:text-${mode === 'signin' ? 'emerald' : 'cyan'}-400 transition-colors`}
                                                 >
                                                     {mode === 'signin' 
                                                         ? '¿No tienes cuenta? Regístrate' 
@@ -208,20 +220,20 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                                     </>
                                 ) : (
                                     <div className="text-center py-4">
-                                        <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                                            <CheckCircle className="w-8 h-8 text-green-400" />
+                                        <div className={`w-16 h-16 ${mode === 'signin' ? 'bg-green-500/20' : 'bg-cyan-500/20'} rounded-full flex items-center justify-center mx-auto mb-4`}>
+                                            <CheckCircle className={`w-8 h-8 ${mode === 'signin' ? 'text-green-400' : 'text-cyan-400'}`} />
                                         </div>
                                         <h2 className="text-2xl font-bold text-white mb-2">
-                                            {mode === 'signup' ? '¡Confirma tu email!' : '¡Revisa tu email!'}
+                                            {mode === 'signup' ? '¡CASI ESTÁS!' : '¡Revisa tu email!'}
                                         </h2>
                                         <p className="text-white/60 text-sm mb-6">
                                             {mode === 'signup' 
-                                                ? 'Hemos enviado un enlace de confirmación a'
+                                                ? 'Hemos enviado el enlace de alta a'
                                                 : 'Hemos enviado un enlace mágico a'}<br />
                                             <span className="text-white font-medium">{email}</span>
                                         </p>
-                                        <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-4 mb-6">
-                                            <p className="text-emerald-400 text-[11px] uppercase tracking-widest font-bold leading-relaxed">
+                                        <div className={`bg-${mode === 'signin' ? 'emerald' : 'cyan'}-500/10 border border-${mode === 'signin' ? 'emerald' : 'cyan'}-500/20 rounded-lg p-4 mb-6`}>
+                                            <p className={`${mode === 'signin' ? 'text-emerald-400' : 'text-cyan-400'} text-[11px] uppercase tracking-widest font-bold leading-relaxed`}>
                                                 Pulsa en el enlace del correo para activar tu cuenta.<br/>
                                                 <span className="text-white/60 text-[9px] mt-2 block italic">Si no lo ves, revisa tu carpeta de SPAM.</span>
                                             </p>
