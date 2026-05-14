@@ -39,15 +39,15 @@ export const detectCategory = (title: string, content?: string): string => {
     });
   };
 
-  // 1. GEOPOLÍTICA (Alta Prioridad)
+  // 1. GEOPOLÍTICA (Alta Prioridad - Muy específica)
   if (matches('ucrania|rusia|otan|gaza|israel|iran|geopolitica|guerra|conflicto|misil|onu|unicef|interpol|diplomacia|eeuu|china|taiwan|zelensky|putin|biden|kremlin|pentagono|defensa|militar|armamento|ejercito|invasion|frontera|nuclear|sanciones|geoeconomia|intelligence')) return 'GEOPOLÍTICA';
   
-  // 2. TECH
-  if (matches('tecnologia|tech|ia|software|hardware|apple|google|microsoft|startup|ciberseguridad|iphone|meta|elon musk|x|twitter|openai|chatgpt|gemini|nvidia|bitcoin|crypto|blockchain|semiconductores|chips|biotech|robotica|espacial|nasa|spacex|tesla|quantum|digital')) return 'TECH';
-  
-  // 3. DEPORTES
-  if (matches('deportes|futbol|tenis|baloncesto|nba|champions|liga|real madrid|barça|atletico|alcaraz|nadal|alonso|formula 1|motogp|olimpicos|mundial|eurocopa|victoria|derrota|fichaje|marcador|entrenador')) return 'DEPORTES';
+  // 2. DEPORTES (Subida de prioridad para evitar que "meta" o "digital" en deportes activen TECH)
+  if (matches('deportes|futbol|tenis|baloncesto|nba|champions|liga|laliga|uefa|fifa|acb|f1|formula 1|motogp|olimpicos|mundial|eurocopa|copa del rey|copa america|libertadores|betis|real madrid|barça|fc barcelona|atletico de madrid|atleti|girona fc|athletic club|villarreal cf|real sociedad|mbappe|vinicius|bellingham|lewandowski|alcaraz|nadal|alonso|sainz|victoria|derrota|fichaje|traspaso|marcador|entrenador|vencer|triunfo|gol|balon|pelota|estadio|pista|torneo|medalla|podio|clasificacion|permanencia|descenso|ascenso|playoff|eliminatoria|semifinal|finalista|cuartos|octavos|remontada|goleada|hat-trick|doblete|asistencia|var|arbitro|penalti|falta|tarjeta|corner|set|tie-break|break point|triple|mate|rebound|ciclismo|tour de francia|vuelta a españa|giro|padel|boxeo|ufc|mma|atletismo|natacion')) return 'DEPORTES';
 
+  // 3. TECH (Refinado para evitar falsos positivos)
+  if (matches('tecnologia|software|hardware|apple|google|microsoft|startup|ciberseguridad|iphone|openai|chatgpt|gemini|nvidia|bitcoin|crypto|blockchain|semiconductores|chips|biotech|robotica|espacial|nasa|spacex|tesla|quantum|inteligencia artificial')) return 'TECH';
+  
   // 4. ESPAÑA
   if (matches('madrid|barcelona|valencia|andalucia|espana|nacional|español|española|rey|felipe|letizia|zarzuela|comunidad|generalitat|pais vasco|euskadi|galicia|canarias|alicante|sevilla|malaga|zaragoza|bilbao|senado|congreso')) return 'ESPAÑA';
   

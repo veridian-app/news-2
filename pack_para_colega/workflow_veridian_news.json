@@ -202,7 +202,7 @@
     },
     {
       "parameters": {
-        "url": "https://www.abc.es/rss/2.0/internacional/",
+        "url": "https://www.abc.es/rss/2.0/deportes/",
         "options": {}
       },
       "type": "n8n-nodes-base.rssFeedRead",
@@ -301,7 +301,7 @@
     },
     {
       "parameters": {
-        "url": "https://feeds.elpais.com/mrss-s/pages/ep/site/elpais.com/section/ciencia/portada",
+        "url": "https://feeds.elpais.com/mrss-s/pages/ep/site/elpais.com/section/tecnologia/portada",
         "options": {
           "customFields": "",
           "ignoreSSL": false
