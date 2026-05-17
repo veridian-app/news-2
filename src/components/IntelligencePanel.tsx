@@ -136,7 +136,7 @@ export const IntelligencePanel = ({
                     </div>
                     
                     <div className="text-lg md:text-xl text-zinc-300 font-sans font-light leading-relaxed space-y-6">
-                      {selectedNews.content && selectedNews.content !== 'Contenido restringido.' ? (
+                      {selectedNews.content && typeof selectedNews.content === 'string' && selectedNews.content !== 'Contenido restringido.' ? (
                         selectedNews.content
                           .replace(/^\*\*.*?\*\*/, '')
                           .split('\n')
@@ -148,6 +148,8 @@ export const IntelligencePanel = ({
                             }
                              return <p key={i} className="text-zinc-300/90 break-words overflow-hidden">{trimmed}</p>;
                           })
+                      ) : selectedNews.content && typeof selectedNews.content !== 'string' ? (
+                        <p className="text-zinc-300/90 break-words overflow-hidden">{JSON.stringify(selectedNews.content)}</p>
                       ) : (
                         <p className="text-zinc-500 italic font-mono text-sm">No se ha podido recuperar el cuerpo completo de esta noticia. Solo se dispone del informe de inteligencia.</p>
                       )}

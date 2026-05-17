@@ -16,6 +16,7 @@ import { useSearch } from "@/contexts/SearchContext";
 import { NewsItem } from "@/types/news";
 const IntelligencePanel = lazy(() => import("../components/IntelligencePanel").then(module => ({ default: module.IntelligencePanel })));
 const OnboardingOverlay = lazy(() => import("../components/OnboardingOverlay").then(module => ({ default: module.OnboardingOverlay })));
+import { StrategicIntelligence } from "../components/StrategicIntelligence";
 import { normalizeCategory, detectCategory, shuffleNews, recommendNews, extractKeyPoints, searchNews } from "@/utils/news-utils";
 import { mixpanelTrack } from "@/lib/mixpanel";
 import { startTransition } from "react";
@@ -119,29 +120,23 @@ export default function VeridianNews() {
       return [];
     }
 
-    // Primero filtrar por búsqueda si hay query (usando Fuse.js para máxima precisión)
-    let searchResults = rawNews;
     const isSearching = debouncedSearchQuery.trim().length > 0;
 
     if (isSearching) {
-      searchResults = searchNews(rawNews, debouncedSearchQuery);
+      const searchResults = searchNews(rawNews, debouncedSearchQuery);
       console.log(`🔍 Búsqueda táctica "${debouncedSearchQuery}": ${searchResults.length} resultados`);
-      // Si estamos buscando, devolvemos los resultados de Fuse directamente (que ya vienen ordenados por relevancia)
       return searchResults;
     }
 
-    // Si el usuario elige "Recientes", forzar orden cronológico
     if (sortBy === 'recent') {
       return [...rawNews].sort((a, b) => {
         return new Date(b.date).getTime() - new Date(a.date).getTime();
       });
     }
 
-    if (userPreferences.size === 0) {
-      return shuffleNews([...rawNews]);
-    }
-    return recommendNews([...rawNews], userPreferences, likedNewsIds);
-  }, [rawNews, userPreferences, likedNewsIds, sortBy, debouncedSearchQuery]);
+    // rawNews ya viene pre-ordenado y pre-recomendado por bloques de paginación para evitar layout thrashing y repetición
+    return rawNews;
+  }, [rawNews, sortBy, debouncedSearchQuery]);
 
   const categories = ['TODO', 'GEOPOLÍTICA', 'ESPAÑA', 'POLÍTICA', 'INTERNACIONAL', 'TECH', 'DEPORTES'];
 
@@ -196,15 +191,18 @@ export default function VeridianNews() {
 
   useEffect(() => {
     const loadData = async () => {
-      await loadNews();
+      let prefs = userPreferences;
+      let likes = likedNewsIds;
       if (isSupabaseConfigured()) {
         try {
-          loadUserLikes();
-          loadUserPreferences();
+          const [loadedLikes, loadedPrefs] = await Promise.all([loadUserLikes(), loadUserPreferences()]);
+          if (loadedLikes) likes = loadedLikes;
+          if (loadedPrefs) prefs = loadedPrefs;
         } catch (error) {
           console.error('Error cargando preferencias:', error);
         }
       }
+      await loadNews(prefs, likes);
     };
     loadData();
     const interval = setInterval(loadData, 5 * 60 * 1000);
@@ -250,7 +248,7 @@ export default function VeridianNews() {
     };
   }, [displayNews]);
 
-  // Background P  // Tactical Prefetching: Pre-analyzes news before the user opens the panel
+  // Tactical Prefetching: Pre-analyzes news before the user opens the panel, optimizado para no bloquear el scroll
   useEffect(() => {
     if (!currentVisibleNews || displayNews.length === 0) return;
     
@@ -260,12 +258,11 @@ export default function VeridianNews() {
       const currentIndex = displayNews.findIndex(n => n.id === currentVisibleNews.id);
       if (currentIndex === -1) return;
 
-      // Queue of items to analyze: [Current, Next, Next+1]
+      // Prefetch ultra ligero: solo la noticia actual si no tiene análisis, o a lo sumo la siguiente (máximo 1 item por ciclo)
       const itemsToPrefetch = [
         displayNews[currentIndex],
-        displayNews[currentIndex + 1],
-        displayNews[currentIndex + 2]
-      ].filter(item => item && !analysisCache[item.id] && !item.analysis);
+        displayNews[currentIndex + 1]
+      ].filter(item => item && !analysisCache[item.id] && !item.analysis).slice(0, 1);
 
       if (itemsToPrefetch.length === 0) return;
 
@@ -273,7 +270,6 @@ export default function VeridianNews() {
       
       for (const item of itemsToPrefetch) {
         try {
-          // Double check cache inside loop
           if (analysisCache[item.id]) continue;
 
           console.log(`[TACTICAL_PREFETCH] Analyzing Intelligence for: ${item.title.substring(0, 30)}...`);
@@ -291,9 +287,6 @@ export default function VeridianNews() {
             ...prev, 
             [item.id]: analysis 
           }));
-          
-          // Small delay between prefetch requests to be polite to the API
-          await new Promise(r => setTimeout(r, 500));
         } catch (err) {
           console.warn("Prefetch warning:", err);
         }
@@ -303,8 +296,14 @@ export default function VeridianNews() {
     };
     
     if (prefetchTimeoutRef.current) clearTimeout(prefetchTimeoutRef.current);
-    // Give the user 800ms of "stability" before prefetching (to avoid analyzing while fast-scrolling)
-    prefetchTimeoutRef.current = setTimeout(prefetchIntelligent, 800);
+    // Incrementar a 1500ms para asegurar que el usuario se ha detenido completamente antes de lanzar peticiones de IA
+    prefetchTimeoutRef.current = setTimeout(() => {
+      if ('requestIdleCallback' in window) {
+        (window as any).requestIdleCallback(() => prefetchIntelligent());
+      } else {
+        prefetchIntelligent();
+      }
+    }, 1500);
 
     return () => {
       if (prefetchTimeoutRef.current) clearTimeout(prefetchTimeoutRef.current);
@@ -347,7 +346,10 @@ export default function VeridianNews() {
     }
   };
 
-  const loadNews = async () => {
+  const loadNews = async (currentPrefs?: Map<string, number>, currentLikes?: Set<string>) => {
+    const activePrefs = currentPrefs || userPreferences;
+    const activeLikes = currentLikes || likedNewsIds;
+
     const cachedNews = localStorage.getItem('veridian_news_cache');
     if (cachedNews) {
       try {
@@ -389,10 +391,13 @@ export default function VeridianNews() {
             category: item.category || detectCategory(item.title, item.content || item.summary),
             analysis: item.analysis
           }));
-          setRawNews(processed);
+          
+          const initialRecommended = activePrefs.size === 0 ? shuffleNews(processed) : recommendNews(processed, activePrefs, activeLikes);
+          
+          setRawNews(initialRecommended);
           setError(null);
           setIsOffline(false);
-          localStorage.setItem('veridian_news_cache', JSON.stringify(processed));
+          localStorage.setItem('veridian_news_cache', JSON.stringify(initialRecommended));
         } else if (!cachedNews) {
           setError("No hay noticias disponibles en este momento.");
         }
@@ -439,7 +444,9 @@ export default function VeridianNews() {
           analysis: item.analysis
         }));
         
-        setRawNews(prev => [...prev, ...processed]);
+        const nextRecommended = userPreferences.size === 0 ? shuffleNews(processed) : recommendNews(processed, userPreferences, likedNewsIds);
+        
+        setRawNews(prev => [...prev, ...nextRecommended]);
         setPage(nextPage);
         if (data.length < PAGE_SIZE) setHasMore(false);
       } else {
@@ -453,7 +460,7 @@ export default function VeridianNews() {
   };
 
   const loadUserLikes = async () => {
-    if (!isSupabaseConfigured()) return;
+    if (!isSupabaseConfigured()) return new Set<string>();
     try {
       const { data } = await supabase
         .from('news_likes')
@@ -461,14 +468,17 @@ export default function VeridianNews() {
         .eq('user_id', USER_ID);
 
       if (data) {
-        setLikedNewsIds(new Set(data.map(like => like.news_id)));
+        const likesSet = new Set<string>(data.map(like => like.news_id));
+        setLikedNewsIds(likesSet);
         setTableExists(true);
+        return likesSet;
       }
     } catch (error) { console.log(error); }
+    return new Set<string>();
   };
 
   const loadUserPreferences = async () => {
-    if (!isSupabaseConfigured()) return;
+    if (!isSupabaseConfigured()) return new Map<string, number>();
     try {
       const { data } = await supabase
         .from('user_preferences')
@@ -479,8 +489,10 @@ export default function VeridianNews() {
         const prefs = new Map<string, number>();
         data.forEach(pref => prefs.set(pref.category, pref.score));
         setUserPreferences(prefs);
+        return prefs;
       }
     } catch (error) { console.log(error); }
+    return new Map<string, number>();
   };
 
   const toggleLike = async (item: NewsItem) => {
@@ -564,6 +576,7 @@ export default function VeridianNews() {
                   </button>
                 ))}
               </div>
+              <StrategicIntelligence onSelect={(item) => openFullContent(item)} />
             </motion.header>
 
             <main className="h-full w-full overflow-hidden relative">

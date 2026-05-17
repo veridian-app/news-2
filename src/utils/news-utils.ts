@@ -24,40 +24,103 @@ export const normalizeCategory = (cat: string): string => {
 };
 
 // Detectar categoría táctica con alta precisión
-export const detectCategory = (title: string, content?: string): string => {
-  const normalizeText = (text: string) => 
+// Detectar categoría táctica con alta precisión mediante sistema de scoring jerárquico
+export const detectCategory = (title: any, content?: any): string => {
+  const safeTitle = typeof title === 'string' ? title : String(title || '');
+  const safeContent = typeof content === 'string' ? content : String(content || '');
+
+  const normalizeTextLocal = (text: string) => 
     text.toLowerCase()
         .normalize("NFD")
         .replace(/[\u0300-\u036f]/g, "");
 
-  const textToAnalyze = normalizeText(`${title} ${content || ''}`);
-  const matches = (keywords: string) => {
-    const normalizedKeywords = keywords.split('|').map(k => k.trim()).filter(Boolean);
-    return normalizedKeywords.some(keyword => {
-      const regex = new RegExp(`\\b${normalizeText(keyword)}\\b`, 'i');
-      return regex.test(textToAnalyze);
-    });
+  const normTitle = normalizeTextLocal(safeTitle);
+  const normContent = normalizeTextLocal(safeContent);
+  const fullText = `${normTitle} ${normContent}`;
+
+  const countMatches = (keywords: string, text: string) => {
+    const list = keywords.split('|').map(k => k.trim()).filter(Boolean);
+    let count = 0;
+    for (const kw of list) {
+      const regex = new RegExp(`\\b${normalizeTextLocal(kw)}\\b`, 'gi');
+      const matches = text.match(regex);
+      if (matches) {
+        count += matches.length;
+      }
+    }
+    return count;
   };
 
-  // 1. GEOPOLÍTICA (Alta Prioridad - Muy específica)
-  if (matches('ucrania|rusia|otan|gaza|israel|iran|geopolitica|guerra|conflicto|misil|onu|unicef|interpol|diplomacia|eeuu|china|taiwan|zelensky|putin|biden|kremlin|pentagono|defensa|militar|armamento|ejercito|invasion|frontera|nuclear|sanciones|geoeconomia|intelligence')) return 'GEOPOLÍTICA';
-  
-  // 2. DEPORTES (Subida de prioridad para evitar que "meta" o "digital" en deportes activen TECH)
-  if (matches('deportes|futbol|tenis|baloncesto|nba|champions|liga|laliga|uefa|fifa|acb|f1|formula 1|motogp|olimpicos|mundial|eurocopa|copa del rey|copa america|libertadores|betis|real madrid|barça|fc barcelona|atletico de madrid|atleti|girona fc|athletic club|villarreal cf|real sociedad|mbappe|vinicius|bellingham|lewandowski|alcaraz|nadal|alonso|sainz|victoria|derrota|fichaje|traspaso|marcador|entrenador|vencer|triunfo|gol|balon|pelota|estadio|pista|torneo|medalla|podio|clasificacion|permanencia|descenso|ascenso|playoff|eliminatoria|semifinal|finalista|cuartos|octavos|remontada|goleada|hat-trick|doblete|asistencia|var|arbitro|penalti|falta|tarjeta|corner|set|tie-break|break point|triple|mate|rebound|ciclismo|tour de francia|vuelta a españa|giro|padel|boxeo|ufc|mma|atletismo|natacion')) return 'DEPORTES';
+  const categoriesDict = {
+    GEOPOLÍTICA: {
+      strong: 'ucrania|rusia|otan|gaza|israel|iran|geopolitica|guerra civil|conflicto armado|misil balistico|onu|unicef|interpol|diplomacia|taiwan|zelensky|putin|biden|kremlin|pentagono|ejercito|invasion militar|armas nucleares|geoeconomia|hamas|hezbola|palestina|kiev|moscu',
+      ambiguous: 'guerra|conflicto|misil|defensa|militar|armamento|invasion|frontera|nuclear|sanciones|inteligencia|pacto|alianza|tratado'
+    },
+    DEPORTES: {
+      strong: 'futbol|tenis|baloncesto|nba|champions|liga|laliga|uefa|fifa|acb|f1|formula 1|motogp|juegos olimpicos|mundial de futbol|eurocopa|copa del rey|copa america|libertadores|betis|real madrid|barça|fc barcelona|atletico de madrid|atleti|girona fc|athletic club|villarreal cf|real sociedad|mbappe|vinicius|bellingham|lewandowski|alcaraz|nadal|alonso|sainz|ciclismo|tour de francia|vuelta a españa|padel|boxeo|ufc|mma|atletismo|natacion|goleador|penalti|var|arbitro|hat-trick|doblete|goleada|tie-break|break point|rebound',
+      ambiguous: 'deportes|sport|victoria|derrota|fichaje|traspaso|marcador|entrenador|vencer|triunfo|gol|balon|pelota|estadio|pista|torneo|medalla|podio|clasificacion|permanencia|descenso|ascenso|playoff|eliminatoria|semifinal|finalista|cuartos|octavos|remontada|asistencia|falta|tarjeta|corner|set|triple|mate'
+    },
+    TECH: {
+      strong: 'tecnologia|software|hardware|apple|google|microsoft|startup|ciberseguridad|iphone|openai|chatgpt|gemini|nvidia|bitcoin|crypto|criptomonedas|blockchain|semiconductores|chips|biotech|robotica|espacial|nasa|spacex|tesla|quantum|inteligencia artificial|ia|algoritmo|ciberataque|ransomware|metaverso|realidad virtual',
+      ambiguous: 'digital|innovacion|ciencia|redes sociales|plataforma|usuario|datos|nube|servidor|aplicacion|app'
+    },
+    ESPAÑA: {
+      strong: 'madrid|barcelona|valencia|andalucia|zarzuela|generalitat|pais vasco|euskadi|galicia|canarias|alicante|sevilla|malaga|zaragoza|bilbao|comunidad de madrid|junta de andalucia|mossos|guardia civil|policia nacional|psoe andalucia|pp madrid',
+      ambiguous: 'espana|nacional|español|española|rey|felipe|letizia|comunidad|senado|congreso|diputados|moncloa'
+    },
+    POLÍTICA: {
+      strong: 'politica|sanchez|moncloa|pp|psoe|vox|sumar|ayuso|feijoo|elecciones generales|parlamento|ministro|alcalde|legislatura|reforma laboral|ley de amnistia|constitucional|tribunal supremo|audiencia nacional|decreto|votacion|investidura|mencion de censura',
+      ambiguous: 'gobierno|ley|partido|diputados|senado|concejal|voto|reforma|justicia|juez|fiscal|tribunal|pacto|acuerdo|negociacion|oposicion|debate'
+    },
+    INTERNACIONAL: {
+      strong: 'macron|scholz|latinoamerica|mexico|argentina|venezuela|colombia|eeuu|usa|africa|asia|pacifico|union europea|comision europea|brexit|trump|kamala|harris|washington|londres|parís|berlin|tokio|pekin',
+      ambiguous: 'internacional|mundo|global|extranjero|europa|migracion|clima|salud|oms|pandemia|crisis global|cumbre'
+    }
+  };
 
-  // 3. TECH (Refinado para evitar falsos positivos)
-  if (matches('tecnologia|software|hardware|apple|google|microsoft|startup|ciberseguridad|iphone|openai|chatgpt|gemini|nvidia|bitcoin|crypto|blockchain|semiconductores|chips|biotech|robotica|espacial|nasa|spacex|tesla|quantum|inteligencia artificial')) return 'TECH';
-  
-  // 4. ESPAÑA
-  if (matches('madrid|barcelona|valencia|andalucia|espana|nacional|español|española|rey|felipe|letizia|zarzuela|comunidad|generalitat|pais vasco|euskadi|galicia|canarias|alicante|sevilla|malaga|zaragoza|bilbao|senado|congreso')) return 'ESPAÑA';
-  
-  // 5. POLÍTICA (General)
-  if (matches('politica|gobierno|ley|partido|sanchez|moncloa|pp|psoe|vox|sumar|ayuso|feijoo|elecciones|diputados|senado|parlamento|ministro|concejal|alcalde|voto|legislatura|reforma|justicia|supremo')) return 'POLÍTICA';
-  
-  // 6. INTERNACIONAL (Fallback natural)
-  if (matches('internacional|mundo|global|extranjero|macron|scholz|europa|latinoamerica|mexico|argentina|venezuela|colombia|eeuu|usa|africa|asia|pacifico|migracion|clima|salud|oms')) return 'INTERNACIONAL';
-  
-  return 'INTERNACIONAL';
+  const scores: Record<string, number> = {
+    GEOPOLÍTICA: 0,
+    DEPORTES: 0,
+    TECH: 0,
+    ESPAÑA: 0,
+    POLÍTICA: 0,
+    INTERNACIONAL: 0
+  };
+
+  for (const [cat, dict] of Object.entries(categoriesDict)) {
+    const titleStrong = countMatches(dict.strong, normTitle);
+    const titleAmb = countMatches(dict.ambiguous, normTitle);
+    const contentStrong = countMatches(dict.strong, normContent);
+    const contentAmb = countMatches(dict.ambiguous, normContent);
+
+    scores[cat] = (titleStrong * 5) + (contentStrong * 2) + (titleAmb * 2) + (contentAmb * 1);
+  }
+
+  if (countMatches(categoriesDict.DEPORTES.strong, fullText) > 0) {
+    scores.DEPORTES += 10;
+    scores.GEOPOLÍTICA = Math.max(0, scores.GEOPOLÍTICA - 10);
+  }
+
+  if (countMatches(categoriesDict.POLÍTICA.strong, fullText) > 0 || countMatches(categoriesDict.ESPAÑA.strong, fullText) > 0) {
+    scores.POLÍTICA += 5;
+    scores.DEPORTES = Math.max(0, scores.DEPORTES - 8);
+  }
+
+  let bestCategory = 'INTERNACIONAL';
+  let maxScore = 0;
+
+  for (const [cat, score] of Object.entries(scores)) {
+    if (score > maxScore) {
+      maxScore = score;
+      bestCategory = cat;
+    }
+  }
+
+  if (maxScore < 2) {
+    return 'INTERNACIONAL';
+  }
+
+  return bestCategory;
 };
 
 // Shuffle news
@@ -114,7 +177,7 @@ export const recommendNews = (newsArray: any[], preferences: Map<string, number>
       else if (daysSincePublication < 30) score += 0.5;
     } catch (e) {}
 
-    if (item.content && item.content.length > 100) score += 0.5;
+    if (item.content && typeof item.content === 'string' && item.content.length > 100) score += 0.5;
     if (item.url) score += 0.3;
 
     return { item, score };
@@ -143,9 +206,10 @@ export const recommendNews = (newsArray: any[], preferences: Map<string, number>
 /**
  * Extrae puntos clave de un texto de forma táctica para el feed de Veridian.
  * Intenta obtener las oraciones más significativas y las formatea como bullets.
+ * Tolerante a fallos si text no es un string válido.
  */
-export const extractKeyPoints = (text: string): string[] => {
-  if (!text || text.trim().length === 0) {
+export const extractKeyPoints = (text: any): string[] => {
+  if (!text || typeof text !== 'string' || text.trim().length === 0) {
     return ['Información no disponible', 'Contenido pendiente', 'Datos en actualización'];
   }
 

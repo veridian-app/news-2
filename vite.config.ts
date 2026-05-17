@@ -31,8 +31,8 @@ export default defineConfig(({ mode }) => ({
       }
     },
     // Middleware para manejar el fallback de rutas en /veridian-news y /noticias
-    configureServer(server) {
-      server.middlewares.use((req, res, next) => {
+    configureServer(server: any) {
+      server.middlewares.use((req: any, res: any, next: any) => {
         if (req.url && (req.url === '/veridian-news' || req.url.startsWith('/veridian-news/')) && !req.url.includes('.')) {
           req.url = '/index.html';
         } else if (req.url && (req.url === '/noticias' || req.url.startsWith('/noticias/')) && !req.url.includes('.')) {

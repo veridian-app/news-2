@@ -13,3 +13,10 @@ export interface NewsItem {
   category?: string;
   analysis?: string;
 }
+
+export interface StrategicItem extends NewsItem {
+  impact_level?: number;
+  threat_status?: 'STABLE' | 'ELEVATED' | 'CRITICAL' | 'ALERTA';
+  region?: string;
+  is_breaking?: boolean;
+}

@@ -14,6 +14,30 @@ export type Database = {
   }
   public: {
     Tables: {
+      user_profiles: {
+        Row: {
+          id: string
+          email: string
+          display_name: string | null
+          avatar_url: string | null
+          last_active_at: string | null
+        }
+        Insert: {
+          id: string
+          email: string
+          display_name?: string | null
+          avatar_url?: string | null
+          last_active_at?: string | null
+        }
+        Update: {
+          id?: string
+          email?: string
+          display_name?: string | null
+          avatar_url?: string | null
+          last_active_at?: string | null
+        }
+        Relationships: []
+      }
       waitlist_users: {
         Row: {
           created_at: string
